@@ -7,12 +7,12 @@ os.environ["GROQ_API_KEY"] = settings.GROQ_API_KEY
 
 try:
     llm = ChatGroq(
-        model="deepseek-r1-distill-llama-70b",
-        temperature=0.5,
-        max_tokens=None,
+        model=settings.MODEL_NAME,
+        temperature=settings.TEMPERATURE,
+        max_tokens=settings.MAX_TOKENS,
         reasoning_format="parsed",
-        timeout=None,
-        max_retries=2,
+        timeout=settings.TIMEOUT,
+        max_retries=settings.MAX_RETERIES,
     )
 
     messages = [

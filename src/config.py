@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     MODEL_NAME: str = "deepseek-r1-distill-llama-70b"  # meta-llama/Llama-4-Scout-17B-16E-Instruct
     MAX_TOKENS: int = 1024
     TEMPERATURE: float = 0.3
-    TIMEOUT: float = 10.0  # groq is fast
+    TIMEOUT: float = 30.0  # groq is fast
     TOP_P: float = 0.95
     STREAM: bool = False
     MAX_RETERIES: int = 2
