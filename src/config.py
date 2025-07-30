@@ -6,7 +6,8 @@ from pydantic_settings import BaseSettings
 from typing import Optional
 from pydantic import Field
 
-load_dotenv(dotenv_path="../.env")
+parent_dir = os.path.dirname(os.path.dirname(__file__))
+load_dotenv(dotenv_path=parent_dir+"/.env")
 
 
 class Settings(BaseSettings):
@@ -19,6 +20,7 @@ class Settings(BaseSettings):
     MAX_RETERIES: int = 2
     GROQ_API_KEY: Optional[str] = None
     GROQ_ENDPOINT: Optional[str] = None
+    TAVILY_API_KEY: Optional[str] = None
 
     class Config:
         env_file = ".env"
