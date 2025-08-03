@@ -19,7 +19,7 @@ def search(text: str):
         return response
     except Exception as e:
         return (f"Error happened during search call: {e}"
-                f"If possible, try again.")
+                f"Check the error and if possible, try again.")
 
 
 if __name__ == "__main__":
