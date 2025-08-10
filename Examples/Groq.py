@@ -1,6 +1,14 @@
 import os
+import sys
 from langchain_groq import ChatGroq
 
+current_file_path = os.path.abspath(__file__)
+current_dir = os.path.dirname(current_file_path)
+parent_dir = os.path.dirname(current_dir)
+# Append the current and parent directories to the system path
+sys.path.append(current_dir)
+sys.path.append(parent_dir)
+    
 from src.config import settings, logger
 
 os.environ["GROQ_API_KEY"] = settings.GROQ_API_KEY
