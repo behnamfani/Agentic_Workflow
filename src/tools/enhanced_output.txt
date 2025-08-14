@@ -1,0 +1,203 @@
+
+--- Page 1 (Methods: pdfplumber_text, easyocr) ---
+
+Bitcoin
+History and it’s relation with blockchain
+Bitcoin History and it's relation with blockchain
+
+--- Page 2 (Methods: pdfplumber_text, pdfplumber_tables) ---
+
+What is Bitcoin?
+ Bitcoin is a new currency that was created in
+2009 by an unknown person using the alias
+Satoshi Nakamoto. Transactions are made
+with no middle men – meaning, no banks!
+Bitcoin can be used to book hotels, shopping
+and etc. But much of the hype is about
+getting rich by trading it. The price of bitcoin
+skyrocketed into the thousands in 2017.
+
+[TABLE 1]
+What is Bitcoin?
+ Bitcoin is a new currency that was created in
+2009 by an unknown person using the alias
+Satoshi Nakamoto. Transactions are made
+with no middle men – meaning, no banks!
+Bitcoin can be used to book hotels, shopping
+and etc. But much of the hype is about
+getting rich by trading it. The price of bitcoin
+skyrocketed into the thousands in 2017.
+[/TABLE]
+
+
+--- Page 3 (Methods: pdfplumber_text, pdfplumber_tables) ---
+
+Why Bitcoins?
+ Bitcoins can be used to buy merchandise
+anonymously. In addition, international
+payments are easy and cheap because
+bitcoins are not tied to any country or
+subject to regulation. Small businesses may
+like them because there are no credit card
+fees. Some people just buy bitcoins as an
+investment, hoping that they’ll go up in
+value.
+
+[TABLE 1]
+Why Bitcoins?
+ Bitcoins can be used to buy merchandise
+anonymously. In addition, international
+payments are easy and cheap because
+bitcoins are not tied to any country or
+subject to regulation. Small businesses may
+like them because there are no credit card
+fees. Some people just buy bitcoins as an
+investment, hoping that they’ll go up in
+value.
+[/TABLE]
+
+
+--- Page 4 (Methods: pdfplumber_text, pdfplumber_tables) ---
+
+Acquiring Bitcoins
+ Buy on an Exchange
+Many marketplaces called “bitcoin exchanges”
+allow people to buy or sell bitcoins using
+different currencies. Coinbase is a leading
+exchange, along with Bitstamp and Bitfinex. But
+security can be a concern: bitcoins worth tens
+of millions of dollars were stolen from
+Bitfinex when it was hacked in 2016.
+
+[TABLE 1]
+Acquiring Bitcoins
+ Buy on an Exchange
+Many marketplaces called “bitcoin exchanges”
+allow people to buy or sell bitcoins using
+different currencies. Coinbase is a leading
+exchange, along with Bitstamp and Bitfinex. But
+security can be a concern: bitcoins worth tens
+of millions of dollars were stolen from
+Bitfinex when it was hacked in 2016.
+[/TABLE]
+
+
+--- Page 5 (Methods: pdfplumber_text, pdfplumber_tables) ---
+
+Acquiring Bitcoins
+ Transfers
+People can send bitcoins to each
+other using mobile apps or their
+computers. It’s similar to sending cash
+digitally.
+
+[TABLE 1]
+Acquiring Bitcoins
+ Transfers
+People can send bitcoins to each
+other using mobile apps or their
+computers. It’s similar to sending cash
+digitally.
+[/TABLE]
+
+
+--- Page 6 (Methods: pdfplumber_text, pdfplumber_tables) ---
+
+Acquiring Bitcoins
+ Mining
+People compete to “mine” bitcoins using computers to solve complex math puzzles. This is
+how bitcoins are created. Currently, a winner is rewarded with 12.5 bitcoins roughly every
+10 minutes
+
+[TABLE 1]
+Acquiring Bitcoins
+ Mining
+People compete to “mine” bitcoins using computers to solve complex math puzzles. This is
+how bitcoins are created. Currently, a winner is rewarded with 12.5 bitcoins roughly every
+10 minutes
+[/TABLE]
+
+
+--- Page 7 (Methods: pdfplumber_text, pdfplumber_tables) ---
+
+Mining and Miner
+ Bitcoin miners help keep the Bitcoin network secure by approving transactions.
+Mining is an important and integral part of Bitcoin that ensures fairness while keeping
+the Bitcoin network stable, safe and secure.
+ Transaction fee(optional but better to pay)
+ proof-of-work : Solve a mathematical problem to find a block and store the data
+on it , and you get rewarded by bitcoins.
+
+[TABLE 1]
+Mining and Miner
+ Bitcoin miners help keep the Bitcoin network secure by approving transactions.
+Mining is an important and integral part of Bitcoin that ensures fairness while keeping
+the Bitcoin network stable, safe and secure.
+ Transaction fee(optional but better to pay)
+ proof-of-work : Solve a mathematical problem to find a block and store the data
+on it , and you get rewarded by bitcoins.
+[/TABLE]
+
+
+--- Page 8 (Methods: pdfplumber_text, pdfplumber_tables, easyocr) ---
+
+Bitcoin transaction
+
+[TABLE 1]
+Bitcoin transaction
+[/TABLE]
+
+Bitcoin transaction THE BITCOIN TRANSACTION LIFE CYCLE
+
+--- Page 9 (Methods: pdfplumber_text, pdfplumber_tables, easyocr) ---
+
+Bitcoin on Blockchain
+
+[TABLE 1]
+Bitcoin on Blockchain
+[/TABLE]
+
+Bitcoin on Blockchain Data From: To: B Amount: Bitcoin block example
+
+--- Page 10 (Methods: pdfplumber_text, pdfplumber_tables) ---
+
+Owning Bitcoins
+ Bitcoins are stored in a “digital wallet,” which exists either in the cloud or on a user’s
+computer. The wallet is a kind of virtual bank account that allows users to send or receive
+bitcoins, pay for goods or save their money. Unlike bank accounts, bitcoin wallets are not
+insured by the FDIC.
+ Wallet in cloud: Servers have been hacked. Companies have fled with clients’ Bitcoins.
+ Wallet on computer: You can accidentally delete them. Viruses could destroy them.
+
+[TABLE 1]
+Owning Bitcoins
+ Bitcoins are stored in a “digital wallet,” which exists either in the cloud or on a user’s
+computer. The wallet is a kind of virtual bank account that allows users to send or receive
+bitcoins, pay for goods or save their money. Unlike bank accounts, bitcoin wallets are not
+insured by the FDIC.
+ Wallet in cloud: Servers have been hacked. Companies have fled with clients’ Bitcoins.
+ Wallet on computer: You can accidentally delete them. Viruses could destroy them.
+[/TABLE]
+
+
+--- Page 11 (Methods: pdfplumber_text, pdfplumber_tables) ---
+
+Anonymity
+ Though each bitcoin transaction is recorded in a public
+log, names of buyers and sellers are never revealed –
+only their wallet IDs. While that keeps bitcoin users’
+transactions private, it also lets them buy or sell anything
+without easily tracing it back to them. That’s why it has
+become the currency of choice for people online buying
+drugs or other illicit activities.
+
+[TABLE 1]
+Anonymity
+ Though each bitcoin transaction is recorded in a public
+log, names of buyers and sellers are never revealed –
+only their wallet IDs. While that keeps bitcoin users’
+transactions private, it also lets them buy or sell anything
+without easily tracing it back to them. That’s why it has
+become the currency of choice for people online buying
+drugs or other illicit activities.
+[/TABLE]
