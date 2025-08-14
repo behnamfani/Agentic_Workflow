@@ -14,19 +14,24 @@ class State(TypedDict):
     input: str
     messages: list
     output: str
+    full_history: list
 
 
-class Chatbot:
+class Agent:
 
     def __init__(
             self,
             system_text: str = "You are a helpful agent that can use tools to answer user queries.",
-            chat_history_limit: int = 3
+            chat_history_limit: int = 3,
+            tools=None
     ):
-        self.llm = ChatGroq.Groq(system_text=system_text)
+        if tools is None:
+            tools = []
+        self.groq = ChatGroq.Groq()
+        self.system_text = system_text
         self.agent = create_react_agent(
-            model=llm,
-            tools=[multiply, get_weather_forcast]
+            model=self.groq.llm,
+            tools=tools
         )
         self.limit = chat_history_limit
         self.workflow = self.create_workflow()
@@ -38,18 +43,21 @@ class Chatbot:
         :return: updated state's output and messages
         """
         messages = state.get("messages", [])
+        full_history = state.get("full_history", [])
         query = state.get("input", "")
-        if len(messages) > 0:
-            prompt = (f"Chat History: ### {messages[-self.limit:]}  ### "
-                      f"\n\n"
-                      f"User Query: ### {query} ###")
-        else:
-            prompt = query
-        response = self.llm.ask(prompt)
-        messages.extend([{"role": "user", "content": query}, {"role": "assistant", "content": response}])
+        messages.append({"role": "user", "content": query})
+        response = self.agent.invoke(
+            {"messages":
+                 [{"role": "system", "content": self.system_text}] + messages[-self.limit:]
+             },
+            context={"user": "Behnam"}
+        )
+        messages.append({"role": "assistant", "content": response['messages'][-1].content})
+        full_history.extend(response['messages'])
         return {
-            "output": response,
-            "messages": messages
+            "output": response['messages'][-1].content,
+            "messages": messages,
+            "full_history": full_history
         }
 
     def create_workflow(self, show_graph: bool = True) -> CompiledStateGraph[Any, Any, Any, Any]:
@@ -58,10 +66,10 @@ class Chatbot:
         """
         graph_builder = StateGraph(State)
         # Nodes
-        graph_builder.add_node("chatbot", self.ask)
+        graph_builder.add_node("agent", self.ask)
         # Workflow
-        graph_builder.add_edge(START, "chatbot")
-        graph_builder.add_edge("chatbot", END)
+        graph_builder.add_edge(START, "agent")
+        graph_builder.add_edge("agent", END)
         graph = graph_builder.compile()
         if show_graph:
             # display the workflow
@@ -76,14 +84,16 @@ class Chatbot:
 if __name__ == "__main__":
     # Testing chatbot workflow
     messages = []
-    bot = Chatbot(system_text="You are a math teacher and a helpful assistant.")
+    agent = Agent(system_text="You are a math teacher and a helpful assistant.")
+
 
     def stream_graph_updates(user_input: str):
         global messages
         print(messages)
-        for event in bot.workflow.stream({"input": user_input, "messages": messages}):
+        for event in agent.workflow.stream({"input": user_input, "messages": messages}):
             for value in event.values():
                 print("Assistant:", value["output"])
+                messages = value["messages"]
 
 
     while True:

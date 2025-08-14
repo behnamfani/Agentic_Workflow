@@ -64,7 +64,6 @@ class Chatbot:
             png_bytes = graph.get_graph().draw_mermaid_png()
             image = Image.open(io.BytesIO(png_bytes))
             image.show()
-            # print(graph.invoke({'input': "Hi", 'messages': []}))
 
         return graph
 
@@ -80,6 +79,7 @@ if __name__ == "__main__":
         for event in bot.workflow.stream({"input": user_input, "messages": messages}):
             for value in event.values():
                 print("Assistant:", value["output"])
+                messages = value["messages"]
 
 
     while True:
