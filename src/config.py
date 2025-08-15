@@ -11,7 +11,8 @@ load_dotenv(dotenv_path=parent_dir+"/.env")
 
 
 class Settings(BaseSettings):
-    MODEL_NAME: str = "deepseek-r1-distill-llama-70b"  # meta-llama/Llama-4-Scout-17B-16E-Instruct
+    MODEL_NAME: str = "meta-llama/Llama-4-Scout-17B-16E-Instruct" # "deepseek-r1-distill-llama-70b"
+    REASONING: bool = False  # True
     MAX_TOKENS: int = 1024
     TEMPERATURE: float = 0.3
     TIMEOUT: float = 30.0  # groq is fast

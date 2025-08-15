@@ -18,7 +18,7 @@ class Groq:
                 model=settings.MODEL_NAME,
                 temperature=settings.TEMPERATURE,
                 max_tokens=settings.MAX_TOKENS,
-                reasoning_format="parsed",
+                reasoning_format="parsed" if settings.REASONING else None,
                 timeout=settings.TIMEOUT,
                 max_retries=settings.MAX_RETERIES,
             )

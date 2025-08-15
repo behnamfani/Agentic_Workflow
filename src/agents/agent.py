@@ -8,6 +8,7 @@ from PIL import Image
 import io
 
 from src.llm_models import ChatGroq
+from src.config import logger
 
 
 class State(TypedDict):
@@ -27,6 +28,12 @@ class Agent:
     ):
         if tools is None:
             tools = []
+        try:
+            system_text = (f"{system_text} \n"
+                           f"AVAILABLE Tools: {[t.name for t in tools]}") if len(tools) > 0 else system_text
+        except:
+            pass
+
         self.groq = ChatGroq.Groq()
         self.system_text = system_text
         self.agent = create_react_agent(
@@ -35,6 +42,7 @@ class Agent:
         )
         self.limit = chat_history_limit
         self.workflow = self.create_workflow()
+        logger.info("Agent created")
 
     def ask(self, state: State):
         """
@@ -42,23 +50,26 @@ class Agent:
         :param state: workflow state
         :return: updated state's output and messages
         """
-        messages = state.get("messages", [])
-        full_history = state.get("full_history", [])
-        query = state.get("input", "")
-        messages.append({"role": "user", "content": query})
-        response = self.agent.invoke(
-            {"messages":
-                 [{"role": "system", "content": self.system_text}] + messages[-self.limit:]
-             },
-            context={"user": "Behnam"}
-        )
-        messages.append({"role": "assistant", "content": response['messages'][-1].content})
-        full_history.extend(response['messages'])
-        return {
-            "output": response['messages'][-1].content,
-            "messages": messages,
-            "full_history": full_history
-        }
+        try:
+            messages = state.get("messages", [])
+            full_history = state.get("full_history", [])
+            query = state.get("input", "")
+            messages.append({"role": "user", "content": query})
+            response = self.agent.invoke(
+                {"messages":
+                     [{"role": "system", "content": self.system_text}] + messages[-self.limit:]
+                 },
+                context={"user": "Behnam"}
+            )
+            messages.append({"role": "assistant", "content": response['messages'][-1].content})
+            full_history.extend(response['messages'])
+            return {
+                "output": response['messages'][-1].content,
+                "messages": messages,
+                "full_history": full_history
+            }
+        except Exception as e:
+            logger.error(f"Error at agent responding: {e}")
 
     def create_workflow(self, show_graph: bool = True) -> CompiledStateGraph[Any, Any, Any, Any]:
         """
@@ -84,8 +95,12 @@ class Agent:
 if __name__ == "__main__":
     # Testing chatbot workflow
     messages = []
-    agent = Agent(system_text="You are a math teacher and a helpful assistant.")
-
+    from src.tools import PDF_Reader
+    tool = PDF_Reader.get_tool()
+    agent = Agent(
+        system_text="You are a helpful assistant. that can use tools to answer questions.",
+        tools=[tool]
+    )
 
     def stream_graph_updates(user_input: str):
         global messages
