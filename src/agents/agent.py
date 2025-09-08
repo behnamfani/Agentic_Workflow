@@ -44,10 +44,11 @@ class Agent:
         self.workflow = self.create_workflow()
         logger.info("Agent created")
 
-    def ask(self, state: State):
+    def ask(self, state: State, context: dict = None):
         """
         Process user messages
         :param state: workflow state
+        :param context: static context to be passed
         :return: updated state's output and messages
         """
         try:
@@ -59,7 +60,7 @@ class Agent:
                 {"messages":
                      [{"role": "system", "content": self.system_text}] + messages[-self.limit:]
                  },
-                context={"user": "Behnam"}
+                context=context
             )
             messages.append({"role": "assistant", "content": response['messages'][-1].content})
             full_history.extend(response['messages'])
