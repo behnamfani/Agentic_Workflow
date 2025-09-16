@@ -21,7 +21,7 @@ class Chatbot:
     def __init__(
             self,
             system_text: str = "You are a helpful assistant.",
-            chat_history_limit: int = 3
+            chat_history_limit: int = 8
     ):
         self.llm = ChatGroq.Groq(system_text=system_text)
         self.limit = chat_history_limit
@@ -35,14 +35,10 @@ class Chatbot:
         """
         messages = state.get("messages", [])
         query = state.get("input", "")
-        if len(messages) > 0:
-            prompt = (f"Chat History: ### {messages[-self.limit:]}  ### "
-                      f"\n\n"
-                      f"User Query: ### {query} ###")
-        else:
-            prompt = query
-        response = self.llm.ask(prompt)
-        messages.extend([{"role": "user", "content": query}, {"role": "assistant", "content": response}])
+        messages.append({"role": "user", "content": query})
+        print('123123', messages[-self.limit:])
+        response = self.llm.ask(messages[-self.limit:])
+        messages.extend([{"role": "assistant", "content": response}])
         return {
             "output": response,
             "messages": messages

@@ -32,12 +32,28 @@ class Groq:
         :return:
         """
         try:
-            messages = [
-                ("system", self.system_text),
-                ("human", query),
-            ]
+            if isinstance(query, list):
+                messages = [
+                    {
+                        "role": "system",
+                        "content": [
+                                       {
+                                           "type": "text",
+                                           "text": self.system_text
+                                       },
+                        ]
+                    }
+                ] + query
+            else:
+                messages = [
+                    ("system", self.system_text),
+                    ("human", f"{query}"),
+                ]
             response = self.llm.invoke(messages)
             return response.content
         except Exception as e:
             logger.error(f"Error at generating response: {e}")
             return f"Error at generating response: {e}"
+
+    def ask_visual(self, query) -> str:
+        pass

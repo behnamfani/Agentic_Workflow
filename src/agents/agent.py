@@ -23,7 +23,7 @@ class Agent:
     def __init__(
             self,
             system_text: str = "You are a helpful agent that can use tools to answer user queries.",
-            chat_history_limit: int = 3,
+            chat_history_limit: int = 8,
             tools=None
     ):
         if tools is None:
