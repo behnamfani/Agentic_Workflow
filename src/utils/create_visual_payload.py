@@ -25,3 +25,35 @@ def visual_public_url(query: str, url: str) -> list:
             ]
         }
     ]
+
+
+def encode_image(image_path):
+  with open(image_path, "rb") as image_file:
+    return base64.b64encode(image_file.read()).decode('utf-8')
+
+
+def visual_path(query: str, path: str) -> list:
+    """
+    Create a message for payload to process local visual files
+    :param query: User query
+    :param path: path to the visual file
+    :return: created message list
+    """
+    base64_image = encode_image(path)
+    return [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": query
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{base64_image}",
+                    }
+                }
+            ]
+        }
+    ]
