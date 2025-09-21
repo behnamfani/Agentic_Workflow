@@ -1,7 +1,14 @@
 import os
 from langchain_groq import ChatGroq
+from typing import  Union
 
 from src.config import settings, logger
+from src.utils.create_visual_payload import (
+    visual_path,
+    visual_public_url,
+    is_url,
+    is_local_path
+)
 
 os.environ["GROQ_API_KEY"] = settings.GROQ_API_KEY
 
@@ -25,11 +32,11 @@ class Groq:
         except Exception as e:
             logger.error(f"Error at creating model: {e}")
 
-    def ask(self, query: str) -> str:
+    def ask(self, query: Union[str, list]) -> str:
         """
         Generate response based on the system text and given query
         :param query: given query
-        :return:
+        :return: response
         """
         try:
             if isinstance(query, list):
@@ -55,5 +62,17 @@ class Groq:
             logger.error(f"Error at generating response: {e}")
             return f"Error at generating response: {e}"
 
-    def ask_visual(self, query) -> str:
-        pass
+    def ask_visual(self, query, url) -> str:
+        """
+
+        :param query: given query
+        :param url: public URL or local path to visual file
+        :return: response
+        """
+        if is_url(url):
+            query = visual_public_url(query, url)
+        elif is_local_path(url):
+            query = visual_path(query, url)
+        else:
+            return "Could not find or open the visual URL"
+        return self.ask(query)

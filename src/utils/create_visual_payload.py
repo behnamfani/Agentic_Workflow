@@ -1,4 +1,15 @@
 import base64
+from urllib.parse import urlparse
+import os
+
+
+def is_url(path: str) -> bool:
+    parsed = urlparse(path)
+    return parsed.scheme in ("http", "https", "ftp")
+
+
+def is_local_path(path: str) -> bool:
+    return os.path.exists(path)
 
 
 def visual_public_url(query: str, url: str) -> list:
