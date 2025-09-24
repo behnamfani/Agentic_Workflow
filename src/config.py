@@ -11,7 +11,8 @@ load_dotenv(dotenv_path=parent_dir+"/.env")
 
 
 class Settings(BaseSettings):
-    MODEL_NAME: str = "meta-llama/Llama-4-Scout-17B-16E-Instruct" # "deepseek-r1-distill-llama-70b"
+    # https://console.groq.com/docs/models https://console.groq.com/docs/reasoning
+    MODEL_NAME: str = "meta-llama/Llama-4-Scout-17B-16E-Instruct"
     REASONING: bool = False  # True
     MAX_TOKENS: int = 1024
     TEMPERATURE: float = 0.3
