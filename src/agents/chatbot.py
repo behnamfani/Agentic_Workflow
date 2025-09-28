@@ -36,7 +36,6 @@ class Chatbot:
         messages = state.get("messages", [])
         query = state.get("input", "")
         messages.append({"role": "user", "content": query})
-        print('123123', messages[-self.limit:])
         response = self.llm.ask(messages[-self.limit:])
         messages.extend([{"role": "assistant", "content": response}])
         return {
