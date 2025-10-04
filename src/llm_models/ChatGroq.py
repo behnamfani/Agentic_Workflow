@@ -1,4 +1,6 @@
 import os
+
+from langchain_core.messages import BaseMessage
 from langchain_groq import ChatGroq
 from typing import  Union
 
@@ -32,7 +34,7 @@ class Groq:
         except Exception as e:
             logger.error(f"Error at creating model: {e}")
 
-    def ask(self, query: Union[str, list]) -> str:
+    def ask(self, query: Union[str, list]) -> BaseMessage | str:
         """
         Generate response based on the system text and given query
         :param query: given query
@@ -56,8 +58,7 @@ class Groq:
                     ("system", self.system_text),
                     ("human", f"{query}"),
                 ]
-            response = self.llm.invoke(messages)
-            return response.content
+            return self.llm.invoke(messages)
         except Exception as e:
             logger.error(f"Error at generating response: {e}")
             return f"Error at generating response: {e}"

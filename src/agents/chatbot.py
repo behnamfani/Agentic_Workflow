@@ -1,5 +1,6 @@
-from typing import Annotated, Any
+from typing import Annotated, Any, Union
 
+from langchain_core.messages import BaseMessage
 from langgraph.graph.state import CompiledStateGraph
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
@@ -14,6 +15,7 @@ class State(TypedDict):
     input: str
     messages: list
     output: str
+    response: BaseMessage
 
 
 class Chatbot:
@@ -21,13 +23,28 @@ class Chatbot:
     def __init__(
             self,
             system_text: str = "You are a helpful assistant.",
-            chat_history_limit: int = 8
+            chat_history_limit: int = 8,
+            show_bot: bool = True
     ):
         self.llm = ChatGroq.Groq(system_text=system_text)
         self.limit = chat_history_limit
-        self.workflow = self.create_workflow()
+        self.workflow = self.create_workflow(show_graph=show_bot)
 
-    def ask(self, state: State):
+    def ask(self, query: str, messages: list = None) -> tuple[BaseMessage, list | None]:
+        """
+        Process user messages
+        :param query: user query
+        :param messages: chat history or conversation
+        :return: updated state's output and messages
+        """
+        messages = [] if not messages else messages
+        state = self.workflow.invoke({
+            "input": query,
+            "messages": messages
+        })
+        return state['output'], state['messages']
+
+    def _ask(self, state: State):
         """
         Process user messages
         :param state: workflow state
@@ -37,10 +54,11 @@ class Chatbot:
         query = state.get("input", "")
         messages.append({"role": "user", "content": query})
         response = self.llm.ask(messages[-self.limit:])
-        messages.extend([{"role": "assistant", "content": response}])
+        messages.extend([{"role": "assistant", "content": response.content}])
         return {
-            "output": response,
-            "messages": messages
+            "output": response.content,
+            "messages": messages,
+            "response": response
         }
 
     def create_workflow(self, show_graph: bool = True) -> CompiledStateGraph[Any, Any, Any, Any]:
@@ -49,7 +67,7 @@ class Chatbot:
         """
         graph_builder = StateGraph(State)
         # Nodes
-        graph_builder.add_node("chatbot", self.ask)
+        graph_builder.add_node("chatbot", self._ask)
         # Workflow
         graph_builder.add_edge(START, "chatbot")
         graph_builder.add_edge("chatbot", END)
@@ -66,7 +84,9 @@ class Chatbot:
 if __name__ == "__main__":
     # Testing chatbot workflow
     messages = []
-    bot = Chatbot(system_text="You are a math teacher and a helpful assistant.")
+    bot = Chatbot(system_text="You are a math teacher and a helpful assistant.", show_bot=False)
+    response, messages = bot.ask("Tell me a famous math problem", messages=messages)
+    print(response)
 
     def stream_graph_updates(user_input: str):
         global messages
