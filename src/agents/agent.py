@@ -1,5 +1,6 @@
 from typing import Annotated, Any
 
+from langchain_core.messages import BaseMessage
 from langgraph.graph.state import CompiledStateGraph
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
@@ -16,6 +17,7 @@ class State(TypedDict):
     messages: list
     output: str
     full_history: list
+    response: BaseMessage
 
 
 class Agent:
@@ -24,7 +26,8 @@ class Agent:
             self,
             system_text: str = "You are a helpful agent that can use tools to answer user queries.",
             chat_history_limit: int = 8,
-            tools=None
+            tools: list =None,
+            show_bot: bool = True
     ):
         if tools is None:
             tools = []
@@ -36,15 +39,33 @@ class Agent:
 
         self.groq = ChatGroq.Groq()
         self.system_text = system_text
+        try:
+            self.system_text += f"\n **AVAILABLE Tools**: {[t.name for t in tools]}"
+        except:
+            pass
         self.agent = create_react_agent(
             model=self.groq.llm,
             tools=tools
         )
         self.limit = chat_history_limit
-        self.workflow = self.create_workflow()
+        self.workflow = self.create_workflow(show_graph=show_bot)
         logger.info("Agent created")
 
-    def ask(self, state: State, context: dict = None):
+    def ask(self, query: str, messages: list = None) -> tuple[BaseMessage, list | None]:
+        """
+        Process user messages
+        :param query: user query
+        :param messages: chat history or conversation
+        :return: updated state's output and messages
+        """
+        messages = [] if not messages else messages
+        state = self.workflow.invoke({
+            "input": query,
+            "messages": messages
+        })
+        return state['output'], state['messages']
+
+    def _ask(self, state: State, context: dict = None):
         """
         Process user messages
         :param state: workflow state
@@ -67,7 +88,8 @@ class Agent:
             return {
                 "output": response['messages'][-1].content,
                 "messages": messages,
-                "full_history": full_history
+                "full_history": full_history,
+                "response": response
             }
         except Exception as e:
             logger.error(f"Error at agent responding: {e}")
@@ -78,7 +100,7 @@ class Agent:
         """
         graph_builder = StateGraph(State)
         # Nodes
-        graph_builder.add_node("agent", self.ask)
+        graph_builder.add_node("agent", self._ask)
         # Workflow
         graph_builder.add_edge(START, "agent")
         graph_builder.add_edge("agent", END)
@@ -98,10 +120,20 @@ if __name__ == "__main__":
     messages = []
     from src.tools import PDF_Reader
     tool = PDF_Reader.get_tool()
-    agent = Agent(
-        system_text="You are a helpful assistant. that can use tools to answer questions.",
-        tools=[tool]
+    # Example improved system prompt for your Agent
+    system_text = (
+        "You are a helpful AI assistant. "
+        "You can answer questions directly, or use tools when needed. "
+        "Only use a tool if the user asks for something that requires it"
+        "If you use a tool, explain what you are doing and present the result clearly. "
     )
+    agent = Agent(
+        system_text=system_text,
+        tools=[tool],
+        show_bot=False
+    )
+    response, messages = agent.ask("What can you do for me?", messages=messages)
+    print(response)
 
     def stream_graph_updates(user_input: str):
         global messages

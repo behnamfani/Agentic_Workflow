@@ -51,8 +51,8 @@ def extract_text_with_easyocr(pdf_path, lang_list=None, include_OCR: bool = True
         logger.info("Extracting completed!")
         return full_text
     except Exception as e:
-        logger.error(f"Error occured in extract_text_with_easyocr: {e}")
-        return f"Error occured in extract_text_with_easyocr: {e}"
+        logger.error(f"Error occurred in extract_text_with_easyocr: {e}")
+        return f"Error occurred in extract_text_with_easyocr: {e}"
 
 
 def get_tool() -> StructuredTool:
