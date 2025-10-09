@@ -44,7 +44,7 @@ class Chatbot:
         })
         return state['output'], state['messages']
 
-    def stream_ask(self, query: str, messages: list = None) -> tuple[BaseMessage, list | None]:
+    def stream_ask(self, query: str, messages: list = None):
         """
         Process user messages
         :param query: user query
@@ -52,11 +52,16 @@ class Chatbot:
         :return: updated state's output and messages
         """
         messages = [] if not messages else messages
-        state = self.workflow.invoke({
-            "input": query,
-            "messages": messages
-        })
-        return state['output'], state['messages']
+        for message_chunk, metadata in self.workflow.stream(
+                {
+                    "input": query,
+                    "messages": messages
+                },
+                stream_mode="messages",
+        ):
+            if message_chunk.content:
+                print(message_chunk.content, flush=True)
+                # yield message_chunk.content
 
     def _ask(self, state: State):
         """
@@ -102,25 +107,23 @@ if __name__ == "__main__":
     response, messages = bot.ask("Tell me a famous math problem", messages=messages)
     print(response)
 
-    def stream_graph_updates(user_input: str):
-        global messages
-        print(messages)
-        for event in bot.workflow.stream({"input": user_input, "messages": messages}):
-            for value in event.values():
-                print("Assistant:", value["output"])
-                messages = value["messages"]
-
-
-    while True:
-        try:
-            user_input = input("User: ")
-            if user_input.lower() in ["quit", "exit", "q"]:
-                print("Goodbye!")
-                break
-            stream_graph_updates(user_input)
-        except:
-            # fallback if input() is not available
-            user_input = "What do you know about LangGraph?"
-            print("User: " + user_input)
-            stream_graph_updates(user_input)
-            break
+    # def stream_graph_updates(user_input: str):
+    #     global messages
+    #     print(messages)
+    #     for event in bot.workflow.stream({"input": user_input, "messages": messages}):
+    #         for value in event.values():
+    #             print("Assistant:", value["output"])
+    #             messages = value["messages"]
+    # while True:
+    #     try:
+    #         user_input = input("User: ")
+    #         if user_input.lower() in ["quit", "exit", "q"]:
+    #             print("Goodbye!")
+    #             break
+    #         stream_graph_updates(user_input)
+    #     except:
+    #         # fallback if input() is not available
+    #         user_input = "What do you know about LangGraph?"
+    #         print("User: " + user_input)
+    #         stream_graph_updates(user_input)
+    #         break
