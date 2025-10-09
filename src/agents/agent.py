@@ -27,7 +27,7 @@ class Agent:
             system_text: str = "You are a helpful agent that can use tools to answer user queries.",
             chat_history_limit: int = 8,
             tools: list =None,
-            show_bot: bool = True
+            show_graph: bool = True
     ):
         if tools is None:
             tools = []
@@ -48,7 +48,7 @@ class Agent:
             tools=tools
         )
         self.limit = chat_history_limit
-        self.workflow = self.create_workflow(show_graph=show_bot)
+        self.workflow = self.create_workflow(show_graph=show_graph)
         logger.info("Agent created")
 
     def ask(self, query: str, messages: list = None) -> tuple[BaseMessage, list | None]:
@@ -65,7 +65,7 @@ class Agent:
         })
         return state['output'], state['messages']
 
-    def _ask(self, state: State, context: dict = None):
+    def _assist(self, state: State, context: dict = None):
         """
         Process user messages
         :param state: workflow state
@@ -100,10 +100,10 @@ class Agent:
         """
         graph_builder = StateGraph(State)
         # Nodes
-        graph_builder.add_node("agent", self._ask)
+        graph_builder.add_node(self._assist)
         # Workflow
-        graph_builder.add_edge(START, "agent")
-        graph_builder.add_edge("agent", END)
+        graph_builder.add_edge(START, "_assist")
+        graph_builder.add_edge("_assist", END)
         graph = graph_builder.compile()
         if show_graph:
             # display the workflow
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     agent = Agent(
         system_text=system_text,
         tools=[tool],
-        show_bot=False
+        show_graph=True
     )
     response, messages = agent.ask("What can you do for me?", messages=messages)
     print(response)
