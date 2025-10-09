@@ -44,6 +44,20 @@ class Chatbot:
         })
         return state['output'], state['messages']
 
+    def stream_ask(self, query: str, messages: list = None) -> tuple[BaseMessage, list | None]:
+        """
+        Process user messages
+        :param query: user query
+        :param messages: chat history or conversation
+        :return: updated state's output and messages
+        """
+        messages = [] if not messages else messages
+        state = self.workflow.invoke({
+            "input": query,
+            "messages": messages
+        })
+        return state['output'], state['messages']
+
     def _ask(self, state: State):
         """
         Process user messages
