@@ -65,24 +65,30 @@ class Agent:
         })
         return state['output'], state['messages']
 
-    def stream_ask(self, query: str, messages: list = None):
+    def stream_ask(self, query: str, messages: list = None, mode: str = "updates"):
         """
         Process user messages
         :param query: user query
         :param messages: chat history or conversation
+        :param mode: mode of streaming Literal["values", "updates", "checkpoints", "tasks", "debug", "messages", "custom"]
         :return: updated state's output and messages
         """
         messages = [] if not messages else messages
-        for message_chunk, metadata in self.workflow.stream(
+        for message_chunk in self.workflow.stream(
                 {
                     "input": query,
                     "messages": messages
                 },
-                stream_mode="messages",
+                stream_mode=mode,
         ):
-            if message_chunk.content:
-                print(message_chunk.content, flush=True)
-                # yield message_chunk.content
+            for key in message_chunk:
+                if 'output' in message_chunk[key]:
+                    print(f"{key}: {message_chunk[key]['output']}", flush=True)
+                elif 'messages' in message_chunk[key]:
+                    role = message_chunk[key]['messages'][-1]['role']
+                    content = message_chunk[key]['messages'][-1]['content']
+                    print(f"{role}: {content}", flush=True)
+            # yield message_chunk.content
 
     def _assist(self, state: State, context: dict = None):
         """
@@ -151,7 +157,8 @@ if __name__ == "__main__":
         tools=[tool],
         show_graph=True
     )
-    response, messages = agent.ask("What can you do for me?", messages=messages)
+    agent.stream_ask("What can you do for me?", messages=messages)
+    exit()
     print(response)
 
     def stream_graph_updates(user_input: str):
