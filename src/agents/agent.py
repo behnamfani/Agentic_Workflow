@@ -119,10 +119,10 @@ class Agent:
         """
         graph_builder = StateGraph(State)
         # Nodes
-        graph_builder.add_node(self._assist)
+        graph_builder.add_node("agent", self._assist)
         # Workflow
-        graph_builder.add_edge(START, "_assist")
-        graph_builder.add_edge("_assist", END)
+        graph_builder.add_edge(START, "agent")
+        graph_builder.add_edge("agent", END)
         graph = graph_builder.compile()
         if show_graph:
             # display the workflow

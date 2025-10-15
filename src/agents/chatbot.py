@@ -86,10 +86,10 @@ class Chatbot:
         """
         graph_builder = StateGraph(State)
         # Nodes
-        graph_builder.add_node(self._chat)
+        graph_builder.add_node("chatbot", self._chat)
         # Workflow
-        graph_builder.add_edge(START, "_chat")
-        graph_builder.add_edge("_chat", END)
+        graph_builder.add_edge(START, "chatbot")
+        graph_builder.add_edge("chatbot", END)
         graph = graph_builder.compile()
         if show_graph:
             # display the workflow
