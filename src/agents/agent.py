@@ -1,4 +1,4 @@
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from langchain_core.messages import BaseMessage
 from langgraph.graph.state import CompiledStateGraph
@@ -65,12 +65,15 @@ class Agent:
         })
         return state['output'], state['messages']
 
-    def stream_ask(self, query: str, messages: list = None, mode: str = "updates"):
+    def stream_ask(
+            self, query: str, messages: list = None,
+            mode: Literal["values", "updates", "messages", "custom"] = "updates"
+    ):
         """
         Process user messages
         :param query: user query
         :param messages: chat history or conversation
-        :param mode: mode of streaming Literal["values", "updates", "checkpoints", "tasks", "debug", "messages", "custom"]
+        :param mode: mode of streaming Literal["values", "updates", "messages", "custom"]
         :return: updated state's output and messages
         """
         messages = [] if not messages else messages
@@ -81,6 +84,7 @@ class Agent:
                 },
                 stream_mode=mode,
         ):
+            print(message_chunk)
             for key in message_chunk:
                 if 'output' in message_chunk[key]:
                     print(f"{key}: {message_chunk[key]['output']}", flush=True)
@@ -157,6 +161,7 @@ if __name__ == "__main__":
         tools=[tool],
         show_graph=True
     )
+    # TODO to check streaming
     agent.stream_ask("What can you do for me?", messages=messages)
     exit()
     print(response)
