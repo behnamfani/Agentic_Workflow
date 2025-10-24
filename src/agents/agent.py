@@ -1,5 +1,5 @@
 from typing import Annotated, Any, Literal
-
+import asyncio
 from langchain_core.messages import BaseMessage
 from langgraph.graph.state import CompiledStateGraph
 from typing_extensions import TypedDict
@@ -10,14 +10,6 @@ import io
 
 from src.llm_models import ChatGroq
 from src.config import logger
-
-
-class State(TypedDict):
-    input: str
-    messages: list
-    output: str
-    full_history: list
-    response: BaseMessage
 
 
 class Agent:
@@ -39,31 +31,26 @@ class Agent:
 
         self.groq = ChatGroq.Groq()
         self.system_text = system_text
-        try:
-            self.system_text += f"\n **AVAILABLE Tools**: {[t.name for t in tools]}"
-        except:
-            pass
-        self.agent = create_react_agent(
-            model=self.groq.llm,
-            tools=tools
-        )
+
         self.limit = chat_history_limit
-        self.workflow = self.create_workflow(show_graph=show_graph)
+        self.agent = self.create_workflow(tools=tools, show_graph=show_graph)
         logger.info("Agent created")
 
-    def ask(self, query: str, messages: list = None) -> tuple[BaseMessage, list | None]:
+    async def ask(self, query: str, messages: list = None) -> tuple[BaseMessage, list | None]:
         """
         Process user messages
         :param query: user query
-        :param messages: chat history or conversation
+        :param messages: chat history or conversation [{"role": "system", "content": ...}, ...]
         :return: updated state's output and messages
         """
         messages = [] if not messages else messages
-        state = self.workflow.invoke({
-            "input": query,
-            "messages": messages
-        })
-        return state['output'], state['messages']
+        messages.append({"role": "user", "content": query})
+        response = await self.agent.ainvoke(
+            {"messages":
+                 [{"role": "system", "content": self.system_text}] + messages[-self.limit:]
+             },
+        )
+        return response['messages'][-1].content, messages
 
     def stream_ask(
             self, query: str, messages: list = None,
@@ -77,7 +64,7 @@ class Agent:
         :return: updated state's output and messages
         """
         messages = [] if not messages else messages
-        for message_chunk in self.workflow.stream(
+        for message_chunk in self.agent.stream(
                 {
                     "input": query,
                     "messages": messages
@@ -94,54 +81,25 @@ class Agent:
                     print(f"{role}: {content}", flush=True)
             # yield message_chunk.content
 
-    def _assist(self, state: State, context: dict = None):
+    def create_workflow(self, tools: list, show_graph: bool = True) -> CompiledStateGraph[Any, Any, Any, Any]:
         """
-        Process user messages
-        :param state: workflow state
-        :param context: static context to be passed
-        :return: updated state's output and messages
+        Create react agent workflow
         """
         try:
-            messages = state.get("messages", [])
-            full_history = state.get("full_history", [])
-            query = state.get("input", "")
-            messages.append({"role": "user", "content": query})
-            response = self.agent.invoke(
-                {"messages":
-                     [{"role": "system", "content": self.system_text}] + messages[-self.limit:]
-                 },
-                context=context
-            )
-            messages.append({"role": "assistant", "content": response['messages'][-1].content})
-            full_history.extend(response['messages'])
-            return {
-                "output": response['messages'][-1].content,
-                "messages": messages,
-                "full_history": full_history,
-                "response": response
-            }
-        except Exception as e:
-            logger.error(f"Error at agent responding: {e}")
-
-    def create_workflow(self, show_graph: bool = True) -> CompiledStateGraph[Any, Any, Any, Any]:
-        """
-        Create simple chatbot workflow
-        """
-        graph_builder = StateGraph(State)
-        # Nodes
-        graph_builder.add_node("agent", self._assist)
-        # Workflow
-        graph_builder.add_edge(START, "agent")
-        graph_builder.add_edge("agent", END)
-        graph = graph_builder.compile()
+            self.system_text += f"\n **AVAILABLE Tools**: {[t.name for t in tools]}"
+        except:
+            pass
+        agent = create_react_agent(
+            model=self.groq.llm,
+            tools=tools
+        )
         if show_graph:
             # display the workflow
-            png_bytes = graph.get_graph().draw_mermaid_png()
+            png_bytes = agent.get_graph().draw_mermaid_png()
             image = Image.open(io.BytesIO(png_bytes))
             image.show()
-            # print(graph.invoke({'input': "Hi", 'messages': []}))
 
-        return graph
+        return agent
 
 
 if __name__ == "__main__":
@@ -161,6 +119,9 @@ if __name__ == "__main__":
         tools=[tool],
         show_graph=True
     )
+    response, messages = asyncio.run(agent.ask("What can you do for me?", messages=messages))
+    print(response)
+    exit()
     # TODO to check streaming
     agent.stream_ask("What can you do for me?", messages=messages)
     exit()
@@ -169,7 +130,7 @@ if __name__ == "__main__":
     def stream_graph_updates(user_input: str):
         global messages
         print(messages)
-        for event in agent.workflow.stream({"input": user_input, "messages": messages}):
+        for event in agent.agent.stream({"input": user_input, "messages": messages}):
             for value in event.values():
                 print("Assistant:", value["output"])
                 messages = value["messages"]
