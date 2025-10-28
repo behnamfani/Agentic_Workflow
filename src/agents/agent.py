@@ -52,7 +52,7 @@ class Agent:
         )
         return response['messages'][-1].content, messages
 
-    def stream_ask(
+    async def stream_ask(
             self, query: str, messages: list = None,
             mode: Literal["values", "updates", "messages", "custom"] = "updates"
     ):
@@ -64,21 +64,13 @@ class Agent:
         :return: updated state's output and messages
         """
         messages = [] if not messages else messages
-        for message_chunk in self.agent.stream(
-                {
-                    "input": query,
-                    "messages": messages
-                },
+        for message_chunk in await self.agent.astream(
+                {"messages":
+                     [{"role": "system", "content": self.system_text}] + messages[-self.limit:]
+                 },
                 stream_mode=mode,
         ):
             print(message_chunk)
-            for key in message_chunk:
-                if 'output' in message_chunk[key]:
-                    print(f"{key}: {message_chunk[key]['output']}", flush=True)
-                elif 'messages' in message_chunk[key]:
-                    role = message_chunk[key]['messages'][-1]['role']
-                    content = message_chunk[key]['messages'][-1]['content']
-                    print(f"{role}: {content}", flush=True)
             # yield message_chunk.content
 
     def create_workflow(self, tools: list, show_graph: bool = True) -> CompiledStateGraph[Any, Any, Any, Any]:
@@ -119,13 +111,12 @@ if __name__ == "__main__":
         tools=[tool],
         show_graph=True
     )
-    response, messages = asyncio.run(agent.ask("What can you do for me?", messages=messages))
-    print(response)
-    exit()
+    # response, messages = asyncio.run(agent.ask("What can you do for me?", messages=messages))
+    # print(response)
+
     # TODO to check streaming
-    agent.stream_ask("What can you do for me?", messages=messages)
+    asyncio.run(agent.stream_ask("What can you do for me?", messages=messages))
     exit()
-    print(response)
 
     def stream_graph_updates(user_input: str):
         global messages
