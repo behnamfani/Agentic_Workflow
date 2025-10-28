@@ -64,7 +64,8 @@ class Agent:
         :return: updated state's output and messages
         """
         messages = [] if not messages else messages
-        for message_chunk in await self.agent.astream(
+        messages.append({"role": "user", "content": query})
+        async for message_chunk in self.agent.astream(
                 {"messages":
                      [{"role": "system", "content": self.system_text}] + messages[-self.limit:]
                  },
@@ -115,7 +116,7 @@ if __name__ == "__main__":
     # print(response)
 
     # TODO to check streaming
-    asyncio.run(agent.stream_ask("What can you do for me?", messages=messages))
+    asyncio.run(agent.stream_ask("What can you do for me? what is on the pdf 'B:\Documents\Applying\Documents\Arbeitsbescheinigung_Behnam.pdf'", messages=messages))
     exit()
 
     def stream_graph_updates(user_input: str):
