@@ -1,4 +1,4 @@
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, Tuple, List
 import asyncio
 from langchain_core.messages import BaseMessage
 from langgraph.graph.state import CompiledStateGraph
@@ -9,7 +9,8 @@ from PIL import Image
 import io
 
 from src.llm_models import ChatGroq
-from src.config import logger
+from src.utils.logging_config import get_logger
+from src.utils.react_streaming import updates_steaming
 
 
 class Agent:
@@ -18,7 +19,7 @@ class Agent:
             self,
             system_text: str = "You are a helpful agent that can use tools to answer user queries.",
             chat_history_limit: int = 8,
-            tools: list =None,
+            tools: list = None,
             show_graph: bool = True
     ):
         if tools is None:
@@ -34,7 +35,7 @@ class Agent:
 
         self.limit = chat_history_limit
         self.agent = self.create_workflow(tools=tools, show_graph=show_graph)
-        logger.info("Agent created")
+        get_logger().info("Agent created")
 
     async def ask(self, query: str, messages: list = None) -> tuple[BaseMessage, list | None]:
         """
@@ -50,19 +51,21 @@ class Agent:
                  [{"role": "system", "content": self.system_text}] + messages[-self.limit:]
              },
         )
+        messages.append({"role": "assistant", "content": response['messages'][-1].content})
         return response['messages'][-1].content, messages
 
     async def stream_ask(
             self, query: str, messages: list = None,
-            mode: Literal["values", "updates", "messages", "custom"] = "updates"
-    ):
+            mode: Literal["values", "updates", "messages"] = "updates"
+    ) -> tuple[Any, list[Any] | list | None]:
         """
         Process user messages
         :param query: user query
         :param messages: chat history or conversation
-        :param mode: mode of streaming Literal["values", "updates", "messages", "custom"]
+        :param mode: mode of streaming Literal["values", "updates", "messages"]
         :return: updated state's output and messages
         """
+        content, token_usage = "", {'Input': 0, 'Output': 0}
         messages = [] if not messages else messages
         messages.append({"role": "user", "content": query})
         async for message_chunk in self.agent.astream(
@@ -71,8 +74,11 @@ class Agent:
                  },
                 stream_mode=mode,
         ):
-            print(message_chunk)
-            # yield message_chunk.content
+            if mode == "updates":
+                content, token_usage = updates_steaming(message_chunk, token_usage)
+            #TODO
+        messages.append({"role": "assistant", "content": content})
+        return content, messages
 
     def create_workflow(self, tools: list, show_graph: bool = True) -> CompiledStateGraph[Any, Any, Any, Any]:
         """
@@ -99,6 +105,7 @@ if __name__ == "__main__":
     # Testing chatbot workflow
     messages = []
     from src.tools import PDF_Reader
+
     tool = PDF_Reader.get_tool()
     # Example improved system prompt for your Agent
     system_text = (
@@ -115,9 +122,6 @@ if __name__ == "__main__":
     # response, messages = asyncio.run(agent.ask("What can you do for me?", messages=messages))
     # print(response)
 
-    # TODO to check streaming
-    asyncio.run(agent.stream_ask("What can you do for me? what is on the pdf 'B:\Documents\Applying\Documents\Arbeitsbescheinigung_Behnam.pdf'", messages=messages))
-    exit()
 
     def stream_graph_updates(user_input: str):
         global messages
