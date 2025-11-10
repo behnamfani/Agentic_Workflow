@@ -10,7 +10,7 @@ import io
 
 from src.llm_models import ChatGroq
 from src.utils.logging_config import get_logger
-from src.utils.react_streaming import updates_steaming
+from src.utils.react_streaming import updates_steaming, messages_steaming
 
 
 class Agent:
@@ -62,12 +62,13 @@ class Agent:
         Process user messages
         :param query: user query
         :param messages: chat history or conversation
-        :param mode: mode of streaming Literal["values", "updates", "messages"]
+        :param mode: mode of streaming Literal["updates", "messages"]
         :return: updated state's output and messages
         """
         content, token_usage = "", {'Input': 0, 'Output': 0}
         messages = [] if not messages else messages
         messages.append({"role": "user", "content": query})
+        content = ""
         async for message_chunk in self.agent.astream(
                 {"messages":
                      [{"role": "system", "content": self.system_text}] + messages[-self.limit:]
@@ -76,7 +77,12 @@ class Agent:
         ):
             if mode == "updates":
                 content, token_usage = updates_steaming(message_chunk, token_usage)
-            #TODO
+            elif mode == "messages":
+                chunk, token_usage = messages_steaming(message_chunk, token_usage)
+                content += str(chunk)
+            else:
+                print(messages)
+                content = message_chunk
         messages.append({"role": "assistant", "content": content})
         return content, messages
 
@@ -119,9 +125,8 @@ if __name__ == "__main__":
         tools=[tool],
         show_graph=True
     )
-    # response, messages = asyncio.run(agent.ask("What can you do for me?", messages=messages))
-    # print(response)
-
+    response, messages = asyncio.run(agent.ask("What can you do for me?", messages=messages))
+    print(response)
 
     def stream_graph_updates(user_input: str):
         global messages

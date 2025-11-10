@@ -1,3 +1,5 @@
+from langchain_core.messages.ai import AIMessageChunk
+
 from src.utils.logging_config import get_logger
 
 
@@ -36,3 +38,20 @@ def updates_steaming(chunk: dict, token_usage: dict) -> tuple[str, dict]:
                     token_usage['Input'] += tu.get('prompt_tokens', 0)
             get_logger().info(f"--"*10 + "\n")
     return final_content, token_usage
+
+
+def messages_steaming(chunk: tuple, token_usage: dict) -> tuple[str, dict]:
+    """
+    Streaming messages as well as total token used ({'Input': 0, 'Output': 0})
+    """
+    message = chunk[0]
+    if isinstance(message, AIMessageChunk):
+        get_logger().info(message.content)
+        tu = getattr(message, 'usage_metadata', None) if not isinstance(message,
+                                                                             dict) else message.get(
+            'usage_metadata')
+        if tu:
+            token_usage['Output'] += tu.get('output_tokens', 0)
+            token_usage['Input'] += tu.get('input_tokens', 0)
+        return message.content, token_usage
+    return "", token_usage
