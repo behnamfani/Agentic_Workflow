@@ -29,3 +29,45 @@ jupyter lab
 - Run the notebook, modify the `system_text` or tools, and experiment with streaming vs synchronous calls.
 
 Short, focused examples are in `notebooks/` and the core code is in `src/agents/`.
+
+## Quick examples
+
+- Chatbot (synchronous):
+
+```python
+from src.agents.chatbot import Chatbot
+
+bot = Chatbot(system_text="You are a helpful assistant that tells everything in jokes.", show_graph=False)
+messages = []
+response, messages = bot.ask(query="Tell me about LOTR", messages=messages)
+print(response)
+```
+
+- Chatbot (streaming):
+
+```python
+# uses the same `bot` and `messages` as above
+bot.stream_ask(query="Great, thanks", messages=messages)
+```
+
+- Agent with a simple tool (async):
+
+```python
+from src.agents.agent import Agent
+import asyncio
+
+def calculate_age(birth_date: str, target_date: str | None = None) -> str:
+	# minimal shim; see `notebooks/chatbot_agent_example.ipynb` for full function
+	return f"Age calculator received: {birth_date} -> {target_date or 'today'}"
+
+agent = Agent(system_text="You are a helpful assistant that can use tools.", tools=[calculate_age], show_graph=False)
+
+async def run():
+	messages = []
+	response, messages = await agent.stream_ask("My birthday is 1991-12-20. Tell me interesting insights", messages=messages, mode="updates")
+	print(response)
+
+asyncio.run(run())
+```
+
+See `notebooks/chatbot_agent_example.ipynb` for the full `calculate_age` implementation and more usage patterns.
