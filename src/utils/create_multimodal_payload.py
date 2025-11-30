@@ -136,10 +136,3 @@ def create_file_analysis_message(file_path: Union[str, List[str]], query: str | 
     }
 
     return [message]
-
-
-# Example usage:# 
-query = "Please analyze the following files."
-path = r"B:\Codes\Python\CODE\Agentic_Workflow\Agentic_Workflow\notebooks\lama.jpg"
-payload = create_file_analysis_message(path, query)
-print(payload)
