@@ -12,7 +12,7 @@ load_dotenv(dotenv_path=parent_dir+"/.env")
 
 class Settings(BaseSettings):
     # https://console.groq.com/docs/models https://console.groq.com/docs/reasoning
-    MODEL_NAME: str ="meta-llama/Llama-4-Scout-17B-16E-Instruct" # "openai/gpt-oss-120b"  # "meta-llama/Llama-4-Scout-17B-16E-Instruct"
+    MODEL_NAME: str = "openai/gpt-oss-120b"  # "meta-llama/Llama-4-Scout-17B-16E-Instruct"
     REASONING: bool = False  # True
     MAX_TOKENS: int = 2048
     TEMPERATURE: float = 0.7

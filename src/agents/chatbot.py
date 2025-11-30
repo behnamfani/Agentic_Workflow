@@ -8,7 +8,7 @@ from langchain_core.runnables.graph import MermaidDrawMethod
 from PIL import Image
 import io
 
-from src.llm_models import ChatGroq
+from src.llm_models import Chatgroq
 
 
 class State(TypedDict):
@@ -26,7 +26,7 @@ class Chatbot:
             chat_history_limit: int = 8,
             show_graph: bool = True
     ):
-        self.llm = ChatGroq.Groq(system_text=system_text)
+        self.llm = Chatgroq.Groq(system_text=system_text)
         self.limit = chat_history_limit
         self.workflow = self.create_workflow(show_graph=show_graph)
 

@@ -8,7 +8,7 @@ from langgraph.prebuilt import create_react_agent
 from PIL import Image
 import io
 
-from src.llm_models import ChatGroq
+from src.llm_models import Chatgroq
 from src.utils.logging_config import get_logger
 from src.utils.react_streaming import updates_steaming, messages_steaming
 
@@ -30,7 +30,7 @@ class Agent:
         except:
             pass
 
-        self.groq = ChatGroq.Groq()
+        self.groq = Chatgroq.Groq()
         self.system_text = system_text
 
         self.limit = chat_history_limit
