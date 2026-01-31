@@ -4,7 +4,8 @@ from langchain_core.messages import BaseMessage
 from langgraph.graph.state import CompiledStateGraph
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
-from langgraph.prebuilt import create_react_agent
+# from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 from PIL import Image
 import io
 
@@ -94,7 +95,7 @@ class Agent:
             self.system_text += f"\n **AVAILABLE Tools**: {[t.name for t in tools]}"
         except:
             pass
-        agent = create_react_agent(
+        agent = create_agent(
             model=self.groq.llm,
             tools=tools
         )
