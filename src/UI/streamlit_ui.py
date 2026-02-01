@@ -3,22 +3,40 @@ Streamlit UI for Chatbot Application.
 """
 import logging
 import os
+import sys
 from dotenv import load_dotenv
 import streamlit as st
 from langchain.messages import HumanMessage, AIMessage
-from src.utils.logging_config import get_logger
 
+# Add the parent directory to sys.path so we can import our models
+current_file_path = os.path.abspath(__file__)
+current_directory_path = os.path.dirname(current_file_path)
+parent_directory_path = os.path.dirname(current_directory_path)
+root_directory_path = os.path.dirname(parent_directory_path)
+sys.path.insert(0, current_directory_path)
+sys.path.insert(0, parent_directory_path)
+sys.path.insert(0, root_directory_path)
+
+from src.utils.logging_config import get_logger
 from src.app import App
 
 
 def init_page() -> None:
     """Initializes the Streamlit page configuration."""
     get_logger().info("Initializing the Streamlit page.")
-    st.set_page_config(page_title="Agentic Chatbot", layout="wide")
-    st.header("🤖 Agentic Chatbot")
+    st.set_page_config(
+        page_title="Catbot",
+        page_icon="🐾",
+        layout="wide",
+        initial_sidebar_state="expanded",
+    )
+    with open(current_directory_path + "/static/style.css") as css:
+        st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
+
+    st.header("🐾 Catbot")
     st.sidebar.title("Options")
     st.sidebar.markdown(
-        "💬 A simple chatbot powered by Groq and LangGraph.",
+        "Meow~ 🐾\nHow can I help you today, hooman?",
         unsafe_allow_html=True
     )
 
@@ -69,27 +87,28 @@ def main() -> None:
     init_messages()
     init_app()
 
+    assistant = current_directory_path + "/" + "static/cat.jpg"
     # Display conversation history
     messages = st.session_state.get("messages", [])
     get_logger().info(f"Loaded {len(messages)} messages from session state.")
 
     for message in messages:
         if isinstance(message, AIMessage):
-            with st.chat_message("assistant"):
+            with st.chat_message("assistant", avatar=assistant):
                 st.markdown(message.content)
         elif isinstance(message, HumanMessage):
             with st.chat_message("user"):
                 st.markdown(message.content)
 
     # Get user input and generate responses
-    if user_input := st.chat_input("Ask me anything!"):
+    if user_input := st.chat_input("Meow...Ask me anything!"):
         get_logger().info(f"Received user input: {user_input}")
         st.session_state.messages.append(HumanMessage(content=user_input))
         with st.chat_message("user"):
             st.markdown(user_input)
 
         try:
-            with st.chat_message("assistant"):
+            with st.chat_message("assistant", avatar=assistant):
                 show_answer = st.empty()
                 with st.spinner("Thinking..."):
                     response, _ = st.session_state.app.ask(user_input)
