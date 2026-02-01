@@ -87,7 +87,7 @@ def main() -> None:
     init_messages()
     init_app()
 
-    assistant = current_directory_path + "/" + "static/cat.jpg"
+    assistant = current_directory_path + "/" + "static/Cat.png"
     # Display conversation history
     messages = st.session_state.get("messages", [])
     get_logger().info(f"Loaded {len(messages)} messages from session state.")
