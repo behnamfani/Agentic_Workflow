@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="pictures/catbot.jpg" alt="PaperSoccer Logo" width="220">
+  <img src="pictures/catbot.png" alt="PaperSoccer Logo" width="220">
 </p>
 
 # Agentic_Workflow
