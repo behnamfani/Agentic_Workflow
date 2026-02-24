@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="pictures/catbot.jpg" alt="PaperSoccer Logo" width="220">
+</p>
+
 # Agentic_Workflow
 Agentic workflow examples and small tools built on Langgraph and related Python libraries.
 
