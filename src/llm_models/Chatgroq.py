@@ -31,6 +31,14 @@ class Groq:
                 timeout=settings.TIMEOUT,
                 max_retries=settings.MAX_RETERIES,
             )
+            self.backup_llm = ChatGroq(
+                model=settings.BACKUP_MODEL_NAME,
+                temperature=settings.TEMPERATURE,
+                max_tokens=settings.MAX_TOKENS,
+                reasoning_format="parsed" if settings.REASONING else None,
+                timeout=settings.TIMEOUT,
+                max_retries=settings.MAX_RETERIES,
+            )
         except Exception as e:
             logger.error(f"Error at creating model: {e}")
 
@@ -58,7 +66,12 @@ class Groq:
                     ("system", self.system_text),
                     ("human", f"{query}"),
                 ]
-            return self.llm.invoke(messages)
+            try:
+                response = self.llm.invoke(messages)
+            except Exception as e:
+                logger.warning(f"Model changes from {settings.MODEL_NAME} to {settings.BACKUP_MODEL_NAME} due to error {e}")
+                response = self.backup_llm.invoke(messages)
+            return self.llm.invoke(response)
         except Exception as e:
             logger.error(f"Error at generating response: {e}")
             return f"Error at generating response: {e}"
