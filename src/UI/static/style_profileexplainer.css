@@ -1,0 +1,34 @@
+/* ProfileExplainer theme overrides */
+:root {
+    --cat-background: linear-gradient(180deg, #0f172a, #07182a);
+    --cat-text: #e0f2fe;
+    --cat-primary: #38bdf8;
+    --cat-primary-soft: rgba(56, 189, 248, 0.35);
+    --cat-accent: #8b5cf6;
+    --cat-secondary: #7c3aed;
+}
+
+.stApp {
+    background: var(--cat-background);
+    color: var(--cat-text);
+}
+
+div[data-testid="stChatMessage"][data-role="assistant"] {
+    background: linear-gradient(135deg, #60a5fa, #7c3aed);
+    color: #f8fafc;
+    border-left: 4px solid var(--cat-primary);
+}
+
+button {
+    background: linear-gradient(135deg, #38bdf8, #a78bfa);
+    color: #0f172a;
+}
+
+button:hover {
+    box-shadow: 0 0 0 2px var(--cat-primary-soft);
+}
+
+section[data-testid="stSidebar"] {
+    background: #02141f;
+    border-right: 1px solid #1e293b;
+}

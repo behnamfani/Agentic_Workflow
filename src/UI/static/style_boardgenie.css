@@ -1,0 +1,34 @@
+/* BoardGenie theme overrides */
+:root {
+    --cat-background: linear-gradient(180deg, #111827, #0b2b4b);
+    --cat-text: #f5f3ff;
+    --cat-primary: #f59e0b;
+    --cat-primary-soft: rgba(245, 158, 11, 0.3);
+    --cat-accent: #0ea5e9;
+    --cat-secondary: #2563eb;
+}
+
+.stApp {
+    background: var(--cat-background);
+    color: var(--cat-text);
+}
+
+div[data-testid="stChatMessage"][data-role="assistant"] {
+    background: linear-gradient(135deg, #fbbf24, #f97316);
+    color: #1f2937;
+    border-left: 4px solid var(--cat-primary);
+}
+
+button {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #1f2937;
+}
+
+button:hover {
+    box-shadow: 0 0 0 2px var(--cat-primary-soft);
+}
+
+section[data-testid="stSidebar"] {
+    background: #001f3f;
+    border-right: 1px solid #2a4365;
+}

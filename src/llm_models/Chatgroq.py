@@ -71,7 +71,7 @@ class Groq:
             except Exception as e:
                 logger.warning(f"Model changes from {settings.MODEL_NAME} to {settings.BACKUP_MODEL_NAME} due to error {e}")
                 response = self.backup_llm.invoke(messages)
-            return self.llm.invoke(response)
+            return response
         except Exception as e:
             logger.error(f"Error at generating response: {e}")
             return f"Error at generating response: {e}"

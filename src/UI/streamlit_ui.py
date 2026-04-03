@@ -4,6 +4,8 @@ Streamlit UI for Chatbot Application.
 import logging
 import os
 import sys
+from typing import Any
+
 from dotenv import load_dotenv
 import streamlit as st
 from langchain.messages import HumanMessage, AIMessage
@@ -21,83 +23,128 @@ from src.utils.logging_config import get_logger
 from src.app import App
 
 
+def _load_css_file(css_path: str) -> None:
+    if os.path.isfile(css_path):
+        with open(css_path, "r", encoding="utf-8") as css:
+            st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
+
+
+def _apply_bot_theme(selected_bot: str) -> None:
+    theme_files = {
+        "BoardGenie": "style_boardgenie.css",
+        "ProfileExplainer": "style_profileexplainer.css",
+        "General": "style.css",
+    }
+    css_name = theme_files.get(selected_bot, "style.css")
+    _load_css_file(current_directory_path + f"/static/{css_name}")
+
+
+def _get_bot_avatar(selected_bot: str) -> Any | None:
+    local_avatars = {
+        "BoardGenie": current_directory_path + r"/static/BoardGenie.png",
+        "ProfileExplainer": current_directory_path + r"/static/ProfileExplainer.png",
+        "General": current_directory_path + r"/static/Cat.png",
+    }
+
+    local_path = local_avatars.get(selected_bot) or local_avatars["General"]
+    print(local_path)
+    if os.path.isfile(local_path):
+        return local_path
+    return None
+
+
+def init_session():
+    """Initialize all session state variables safely."""
+    if "bot_started" not in st.session_state:
+        st.session_state.bot_started = False
+    if "selected_bot" not in st.session_state:
+        st.session_state.selected_bot = "General"
+    if "selected_bot_widget" not in st.session_state:
+        st.session_state.selected_bot_widget = st.session_state.selected_bot
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+
 def main() -> None:
-    """
-    The main function to run the Streamlit app.
-    Handles bot selection and chatbot interaction.
-    """
     get_logger().info("Starting the Streamlit application.")
     load_dotenv()
 
-    # Set page config once
     st.set_page_config(
         page_title="Catbot",
         page_icon="🐾",
         layout="wide",
         initial_sidebar_state="expanded",
     )
-    with open(current_directory_path + "/static/style.css") as css:
-        st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
 
-    if not st.session_state.get('bot_started', False):
-        # Starter Page: Bot Selection
+    init_session()
+    _apply_bot_theme(st.session_state.selected_bot)
+
+    # ============ BOT SELECTION PAGE =============
+    if not st.session_state.bot_started:
+
         st.title("🐾 Choose Your Bot")
-        
+
         with st.sidebar:
             st.title("Bot Selection")
             st.markdown("Select a bot and customize its details before starting!")
-            
+
             bot_options = ["General", "ProfileExplainer", "BoardGenie"]
-            selected_bot = st.selectbox("Choose Bot", bot_options, key="selected_bot")
-            
-            # Define system texts for each bot
+            selected_bot = st.selectbox(
+                "Choose Bot",
+                bot_options,
+                key="selected_bot_widget"
+            )
+            st.session_state.selected_bot = selected_bot
+
             bot_system_texts = {
                 "General": "You are a helpful assistant.",
                 "ProfileExplainer": "You are a profile explainer bot.",
                 "BoardGenie": "You are BoardGenie, a helpful assistant designed to assist users in creating and "
-                              "managing their project boards."
+                              "managing project boards.",
             }
-            
-            # Input fields based on selected bot
+
+            # Dynamic inputs
             if selected_bot == "General":
-                name = st.text_input("Name", value="General Assistant", key="name")
-                details = st.text_area("Details", value="Personality: Friendly and helpful. Language: English. Output "
-                                                        "schema: Maintains long term memory.", height=100,
-                                       key="details")
+                name = st.text_input("Name", value="General Assistant")
+                details = st.text_area(
+                    "Details",
+                    value="Personality: Friendly and helpful. Language: English.",
+                    height=100,
+                )
             elif selected_bot == "ProfileExplainer":
-                language = st.text_input("Language", value="English", key="language")
+                language = st.text_input("Language", value="English")
             elif selected_bot == "BoardGenie":
-                taste_of_game = st.text_input("Taste of game", value="Strategy games", key="taste_of_game")
-                favourite_game = st.text_input("Favourite game", value="Chess", key="favourite_game")
-                long_term_memory = st.text_input("Long term memory", value="Remembers past games and strategies", key="long_term_memory")
-            
-            start = st.button('Start Bot!', key='start')
-            if start:
-                try:
-                    st.session_state['bot_started'] = True
-                    # Store the inputs in session_state
-                    if selected_bot == "General":
-                        st.session_state['bot_name'] = name
-                        st.session_state['bot_details'] = details
-                    elif selected_bot == "ProfileExplainer":
-                        st.session_state['bot_language'] = language
-                    elif selected_bot == "BoardGenie":
-                        st.session_state['bot_taste_of_game'] = taste_of_game
-                        st.session_state['bot_favourite_game'] = favourite_game
-                        st.session_state['bot_long_term_memory'] = long_term_memory
-                    st.session_state.app = App(
-                        system_text=bot_system_texts[selected_bot],
-                        chat_history_limit=8,
-                        show_graph=False,
-                    )
-                    st.session_state.messages = []  # Initialize messages
-                    st.rerun()
-                except Exception as e:
-                    get_logger().error(f"Failed to initialize the app: {e}")
-                    st.error("Error initializing the chatbot. Please check the logs.")
+                taste_of_game = st.text_input("Taste of game", value="Strategy games")
+                favourite_game = st.text_input("Favourite game", value="Chess")
+                long_term_memory = st.text_input(
+                    "Long term memory",
+                    value="Remembers past games and strategies",
+                )
+
+            if st.button("Start Bot!"):
+                st.session_state.bot_started = True
+                # Store config
+                if selected_bot == "General":
+                    st.session_state.bot_name = name
+                    st.session_state.bot_details = details
+                elif selected_bot == "ProfileExplainer":
+                    st.session_state.bot_language = language
+                elif selected_bot == "BoardGenie":
+                    st.session_state.bot_taste_of_game = taste_of_game
+                    st.session_state.bot_favourite_game = favourite_game
+                    st.session_state.bot_long_term_memory = long_term_memory
+                # Initialize app
+                st.session_state.app = App(
+                    system_text=bot_system_texts[selected_bot],
+                    chat_history_limit=8,
+                    show_graph=False,
+                )
+                st.session_state.messages = []
+                st.rerun()
+
+    # ============ CHAT PAGE =============
     else:
-        # Chat Page: Interact with the Bot
-        selected_bot = st.session_state.get('selected_bot', 'Bot')
+        selected_bot = st.session_state.selected_bot
         st.title(f"🐾 Chat with {selected_bot}")
         
         with st.sidebar:
@@ -118,15 +165,14 @@ def main() -> None:
                 st.cache_resource.clear()
                 st.cache_data.clear()
                 st.rerun()
-        
-        # Chat Interface
-        assistant = current_directory_path + "/static/Cat.png"  # TODO: Customize per bot later
-        messages = st.session_state.get("messages", [])
-        get_logger().info(f"Loaded {len(messages)} messages from session state.")
-        
-        for message in messages:
+
+        assistant_avatar = _get_bot_avatar(selected_bot)
+        print(assistant_avatar)
+
+        # Show chat history
+        for message in st.session_state.messages:
             if isinstance(message, AIMessage):
-                with st.chat_message("assistant", avatar=assistant):
+                with st.chat_message("assistant", avatar=assistant_avatar):
                     st.markdown(message.content)
             elif isinstance(message, HumanMessage):
                 with st.chat_message("user", avatar="👤"):
@@ -140,7 +186,7 @@ def main() -> None:
                 st.markdown(user_input)
             
             try:
-                with st.chat_message("assistant", avatar=assistant):
+                with st.chat_message("assistant", avatar=assistant_avatar):
                     show_answer = st.empty()
                     with st.spinner("Thinking..."):
                         response, _ = st.session_state.app.ask(user_input)
@@ -153,5 +199,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    get_logger().info("Application starting.")
     main()
