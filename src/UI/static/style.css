@@ -124,3 +124,8 @@ div[data-testid="stChatMessage"][data-role="assistant"] img {
     background: linear-gradient(180deg, #38bdf8, var(--cat-green));
     border-radius: 8px;
 }
+
+/* Smooth transitions */
+* {
+    transition: all 0.2s ease-in-out;
+}

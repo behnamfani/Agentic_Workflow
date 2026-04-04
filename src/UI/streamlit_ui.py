@@ -47,7 +47,6 @@ def _get_bot_avatar(selected_bot: str) -> Any | None:
     }
 
     local_path = local_avatars.get(selected_bot) or local_avatars["General"]
-    print(local_path)
     if os.path.isfile(local_path):
         return local_path
     return None
@@ -77,7 +76,10 @@ def main() -> None:
     )
 
     init_session()
-    _apply_bot_theme(st.session_state.selected_bot)
+    if st.session_state.bot_started:
+        _apply_bot_theme(st.session_state.selected_bot)
+    else:
+        _apply_bot_theme("General")
 
     # ============ BOT SELECTION PAGE =============
     if not st.session_state.bot_started:
@@ -97,10 +99,10 @@ def main() -> None:
             st.session_state.selected_bot = selected_bot
 
             bot_system_texts = {
-                "General": "You are a helpful assistant.",
-                "ProfileExplainer": "You are a profile explainer bot.",
+                "General": "You are a helpful assistant. Use cat emojis when answering.",
+                "ProfileExplainer": "You are a profile explainer bot. Be polite and professional.",
                 "BoardGenie": "You are BoardGenie, a helpful assistant designed to assist users in creating and "
-                              "managing project boards.",
+                              "managing project boards. Use game emojis when answering.",
             }
 
             # Dynamic inputs
@@ -149,6 +151,12 @@ def main() -> None:
         
         with st.sidebar:
             st.title("Chat Options")
+            title_mapper = {
+                "General": "🐾",
+                "ProfileExplainer": "📃",
+                "BoardGenie": "🧞‍♂️🎲",
+            }
+
             st.markdown(f"Meow~ 🐾\nChatting with {selected_bot}!")
             
             # Reset Conversation
@@ -167,7 +175,6 @@ def main() -> None:
                 st.rerun()
 
         assistant_avatar = _get_bot_avatar(selected_bot)
-        print(assistant_avatar)
 
         # Show chat history
         for message in st.session_state.messages:
@@ -190,7 +197,7 @@ def main() -> None:
                     show_answer = st.empty()
                     with st.spinner("Thinking..."):
                         response, _ = st.session_state.app.ask(user_input)
-                        get_logger().info(f"Generated response: {response[:100]}...")
+                        get_logger().info(f"Generated response!")
                         show_answer.write(response)
                     st.session_state.messages.append(AIMessage(content=response))
             except Exception as e:

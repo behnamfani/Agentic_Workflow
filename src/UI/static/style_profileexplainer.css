@@ -1,11 +1,13 @@
-/* ProfileExplainer theme overrides */
+/* ProfileExplainer - Clean Tech Theme */
 :root {
-    --cat-background: linear-gradient(180deg, #0f172a, #07182a);
-    --cat-text: #e0f2fe;
-    --cat-primary: #38bdf8;
-    --cat-primary-soft: rgba(56, 189, 248, 0.35);
-    --cat-accent: #8b5cf6;
-    --cat-secondary: #7c3aed;
+    --cat-background: radial-gradient(circle at top, #0f172a 0%, #020617 100%);
+    --cat-text: #e5e7eb;
+
+    --cat-primary: #e5e7eb;
+    --cat-primary-soft: rgba(229, 231, 235, 0.25);
+
+    --cat-accent: #94a3b8;
+    --cat-secondary: #64748b;
 }
 
 .stApp {
@@ -13,22 +15,33 @@
     color: var(--cat-text);
 }
 
+/* Assistant message */
 div[data-testid="stChatMessage"][data-role="assistant"] {
-    background: linear-gradient(135deg, #60a5fa, #7c3aed);
+    background: linear-gradient(135deg, #334155, #64748b);
     color: #f8fafc;
     border-left: 4px solid var(--cat-primary);
+    box-shadow: 0 0 10px rgba(148, 163, 184, 0.25);
 }
 
+/* Buttons */
 button {
-    background: linear-gradient(135deg, #38bdf8, #a78bfa);
-    color: #0f172a;
+    background: linear-gradient(135deg, #64748b, #94a3b8);
+    color: #020617;
+    border: none;
 }
 
 button:hover {
-    box-shadow: 0 0 0 2px var(--cat-primary-soft);
+    box-shadow: 0 0 0 2px var(--cat-primary-soft),
+                0 0 10px rgba(148, 163, 184, 0.3);
 }
 
+/* Sidebar */
 section[data-testid="stSidebar"] {
-    background: #02141f;
-    border-right: 1px solid #1e293b;
+    background: linear-gradient(180deg, #020617, #0f172a);
+    border-right: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+/* Smooth transitions */
+* {
+    transition: all 0.2s ease-in-out;
 }

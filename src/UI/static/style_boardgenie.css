@@ -1,11 +1,14 @@
-/* BoardGenie theme overrides */
+/* BoardGenie - Neon Gold Theme */
 :root {
-    --cat-background: linear-gradient(180deg, #111827, #0b2b4b);
-    --cat-text: #f5f3ff;
-    --cat-primary: #f59e0b;
-    --cat-primary-soft: rgba(245, 158, 11, 0.3);
-    --cat-accent: #0ea5e9;
-    --cat-secondary: #2563eb;
+    --cat-background: radial-gradient(circle at top, #0a1a2f 0%, #020617 100%);
+    --cat-text: #fff8cc;
+
+    --cat-primary: #ffe55c;
+    --cat-primary-strong: #ffd84d;
+    --cat-primary-soft: rgba(255, 229, 92, 0.25);
+
+    --cat-accent: #facc15;
+    --cat-secondary: #eab308;
 }
 
 .stApp {
@@ -13,22 +16,33 @@
     color: var(--cat-text);
 }
 
+/* Assistant message (glow style) */
 div[data-testid="stChatMessage"][data-role="assistant"] {
-    background: linear-gradient(135deg, #fbbf24, #f97316);
-    color: #1f2937;
+    background: linear-gradient(135deg, #ffe55c, #facc15);
+    color: #1a1a1a;
     border-left: 4px solid var(--cat-primary);
+    box-shadow: 0 0 12px rgba(255, 229, 92, 0.4);
 }
 
+/* Buttons */
 button {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: #1f2937;
+    background: linear-gradient(135deg, #ffe55c, #eab308);
+    color: #1a1a1a;
+    border: none;
 }
 
 button:hover {
-    box-shadow: 0 0 0 2px var(--cat-primary-soft);
+    box-shadow: 0 0 0 2px var(--cat-primary-soft),
+                0 0 12px rgba(255, 229, 92, 0.5);
 }
 
+/* Sidebar */
 section[data-testid="stSidebar"] {
-    background: #001f3f;
-    border-right: 1px solid #2a4365;
+    background: linear-gradient(180deg, #020617, #0a1a2f);
+    border-right: 1px solid rgba(255, 229, 92, 0.15);
+}
+
+/* Smooth transitions */
+* {
+    transition: all 0.2s ease-in-out;
 }
