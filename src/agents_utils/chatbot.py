@@ -8,7 +8,7 @@ from langchain_core.runnables.graph import MermaidDrawMethod
 from PIL import Image
 import io
 
-from src.llm_models import Chatgroq
+from src.llm_chats import Chatgroq
 
 
 class State(TypedDict):

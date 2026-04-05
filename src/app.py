@@ -6,7 +6,7 @@ from typing import Optional, Tuple, List
 
 from langchain_core.messages import BaseMessage
 
-from src.agents.chatbot import Chatbot
+from src.agents_utils.chatbot import Chatbot
 from src.utils.logging_config import get_logger
 
 

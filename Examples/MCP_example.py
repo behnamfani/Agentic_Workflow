@@ -12,7 +12,7 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.append(current_dir)
 sys.path.append(parent_dir)
 
-from src.agents.agent import Agent
+from src.agents_utils.agent import Agent
 
 
 mcp_folder_path = Path(parent_dir) / "src" / "mcp_servers"
