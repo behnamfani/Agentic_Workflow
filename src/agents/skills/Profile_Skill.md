@@ -1,5 +1,5 @@
 ---
-name: behnam-fanitabasi
+name: behnam-fanitabasi-profile
 description: Answer questions about Behnam Fanitabasi's professional profile — work experience, technical skills, education, projects, and contact info. Use when anyone asks who Behnam is, what he can do, his background in GenAI/NLP/ML, or how to reach him.
 ---
 

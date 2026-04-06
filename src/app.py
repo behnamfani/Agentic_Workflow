@@ -1,12 +1,12 @@
 """
 Application class for managing chatbot interactions.
 """
-import logging
 from typing import Optional, Tuple, List
 
 from langchain_core.messages import BaseMessage
 
 from src.agents_utils.chatbot import Chatbot
+from src.agents_utils.agent import Agent
 from src.utils.logging_config import get_logger
 
 
@@ -20,6 +20,8 @@ class App:
         self,
         system_text: str = "You are a helpful assistant.",
         chat_history_limit: int = 8,
+        clients: list = None,
+        tools: list = None,
         show_graph: bool = False,
     ):
         """
@@ -30,12 +32,25 @@ class App:
             chat_history_limit (int): Maximum conversation history to keep.
             show_graph (bool): Whether to display the workflow graph.
         """
+        if tools is None:
+            tools = []
+        if clients is None:
+            clients = []
+        all_tools = [t for t in tools+clients]
         get_logger().info(f"Initializing App with system_text: {system_text[:50]}...")
-        self.chatbot = Chatbot(
-            system_text=system_text,
-            chat_history_limit=chat_history_limit,
-            show_graph=show_graph,
-        )
+        if len(all_tools) > 0:
+            self.bot = Agent(
+                system_text=system_text,
+                chat_history_limit=chat_history_limit,
+                tools=all_tools,
+                show_graph=show_graph,
+            )
+        else:
+            self.bot = Chatbot(
+                system_text=system_text,
+                chat_history_limit=chat_history_limit,
+                show_graph=show_graph,
+            )
         self.messages: List = []
         get_logger().info("App initialized successfully.")
 
@@ -51,7 +66,7 @@ class App:
         """
         get_logger().info(f"Processing query: {query[:50]}...")
         try:
-            response, messages = self.chatbot.ask(query, messages=self.messages)
+            response, messages = self.bot.ask(query, messages=self.messages)
             self.messages = messages
             get_logger().info(f"Response generated successfully.")
             return response, messages
@@ -68,7 +83,7 @@ class App:
         """
         get_logger().info(f"Processing streaming query: {query[:50]}...")
         try:
-            self.chatbot.stream_ask(query, messages=self.messages)
+            self.bot.stream_ask(query, messages=self.messages)
             get_logger().info("Streaming response completed.")
         except Exception as e:
             get_logger().error(f"Error during stream_ask: {e}")

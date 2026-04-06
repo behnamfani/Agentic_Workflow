@@ -21,7 +21,8 @@ sys.path.insert(0, root_directory_path)
 
 from src.utils.logging_config import get_logger
 from src.app import App
-from src.agents.ProfileExplainer import ProfileExplainer
+from src.tools import skill_utils
+from src.agents.ProfileExplainer import profile_explainer
 
 
 def _load_css_file(css_path: str) -> None:
@@ -101,7 +102,7 @@ def main() -> None:
 
             bot_system_texts = {
                 "General": "You are a helpful assistant. Use cat emojis when answering.",
-                "ProfileExplainer": ProfileExplainer,
+                "ProfileExplainer": profile_explainer.AGENT_INSTRUCTIONS,
                 "BoardGenie": "You are BoardGenie, a helpful assistant designed to assist users in creating and "
                               "managing project boards. Use game emojis when answering.",
             }
