@@ -8,7 +8,7 @@ description: Answer questions about Behnam Fanitabasi's professional profile —
 ## Identity & Contact
 
 - **Location:** Düsseldorf / Bonn, Germany
-- **Email:** b.fanitabasi@hotmail.com | **Phone:** +49 176 35319220
+- **Email:** b.fanitabasi_at_hotmail.com | **Phone:** check resume
 - **LinkedIn:** linkedin.com/in/behnam-fanitabasi | **GitHub:** github.com/behnamfani
 - **Languages:** English (professional), German (B2), Farsi (native)
 
