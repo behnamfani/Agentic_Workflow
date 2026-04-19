@@ -104,6 +104,7 @@ def read_skill(skills_dir: str, skill_name: str) -> dict:
 def get_tools() -> tuple[StructuredTool, StructuredTool]:
     return StructuredTool.from_function(list_skills), StructuredTool.from_function(read_skill)
 
+
 if __name__ == "__main__":
     import sys
     import json

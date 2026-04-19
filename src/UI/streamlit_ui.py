@@ -22,7 +22,7 @@ sys.path.insert(0, root_directory_path)
 from src.utils.logging_config import get_logger
 from src.app import App
 from src.tools import skill_utils
-from src.agents.ProfileExplainer import profile_explainer
+from src.agents.ProfileExplainer import profile_explainer, profile_tools
 
 
 def _load_css_file(css_path: str) -> None:
@@ -52,6 +52,25 @@ def _get_bot_avatar(selected_bot: str) -> Any | None:
     if os.path.isfile(local_path):
         return local_path
     return None
+
+
+def _create_app_bot(
+        bot_name: str,
+        system_text: str,
+        chat_history_limit: int = 8,
+        show_graph: bool = False,
+        tools: list = None
+):
+    if not tools:
+        tools = []
+    if not st.session_state.get(bot_name):
+         st.session_state[bot_name] = App(
+                system_text=system_text,
+                chat_history_limit=chat_history_limit,
+                show_graph=show_graph,
+                tools=tools,
+            )
+    return st.session_state[bot_name]
 
 
 def init_session():
@@ -131,17 +150,21 @@ def main() -> None:
                 if selected_bot == "General":
                     st.session_state.bot_name = name
                     st.session_state.bot_details = details
+                    tools=None
                 elif selected_bot == "ProfileExplainer":
                     st.session_state.bot_language = language
+                    tools = profile_tools.tools
                 elif selected_bot == "BoardGenie":
                     st.session_state.bot_taste_of_game = taste_of_game
                     st.session_state.bot_favourite_game = favourite_game
                     st.session_state.bot_long_term_memory = long_term_memory
+                    tools=None
                 # Initialize app
                 st.session_state.app = App(
                     system_text=bot_system_texts[selected_bot],
                     chat_history_limit=8,
                     show_graph=False,
+                    tools=tools
                 )
                 st.session_state.messages = []
                 st.rerun()
