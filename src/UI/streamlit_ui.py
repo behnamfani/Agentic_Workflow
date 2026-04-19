@@ -21,7 +21,7 @@ sys.path.insert(0, root_directory_path)
 
 from src.utils.logging_config import get_logger
 from src.app import App
-from src.tools import skill_utils
+from src.utils.validate_instructions import optional_instructions
 from src.agents.ProfileExplainer import profile_explainer, profile_tools
 
 
@@ -148,20 +148,24 @@ def main() -> None:
                 st.session_state.bot_started = True
                 # Store config
                 if selected_bot == "General":
-                    st.session_state.bot_name = name
-                    st.session_state.bot_details = details
+                    st.session_state.bot_name = f"Name: {name}"
+                    st.session_state.bot_details = f"Details:\n{details}"
+                    opt_instruction = f"{st.session_state.bot_name}\n{st.session_state.bot_details}"
                     tools=None
                 elif selected_bot == "ProfileExplainer":
-                    st.session_state.bot_language = language
+                    st.session_state.bot_language = f"Language: {language}"
                     tools = profile_tools.tools
+                    opt_instruction = f"{st.session_state.bot_language}"
                 elif selected_bot == "BoardGenie":
                     st.session_state.bot_taste_of_game = taste_of_game
                     st.session_state.bot_favourite_game = favourite_game
                     st.session_state.bot_long_term_memory = long_term_memory
+                    opt_instruction = ""
                     tools=None
                 # Initialize app
+                system_texts = bot_system_texts[selected_bot].format(user_instructions_block=optional_instructions(opt_instruction))
                 st.session_state.app = App(
-                    system_text=bot_system_texts[selected_bot],
+                    system_text=system_texts,
                     chat_history_limit=8,
                     show_graph=False,
                     tools=tools
