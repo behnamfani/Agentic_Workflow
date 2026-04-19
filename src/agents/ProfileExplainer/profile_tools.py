@@ -12,4 +12,4 @@ sys.path.insert(0, root_directory_path)
 
 
 from src.tools import skill_utils
-tools = skill_utils.get_tools()
+tools = list(skill_utils.get_tools())

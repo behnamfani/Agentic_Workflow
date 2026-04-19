@@ -1,13 +1,23 @@
 """
 A simple tool for AI agents to discover and read Agent Skills.
 """
-
+import sys
 import re
+import os
 from pathlib import Path
 from typing import Optional, Tuple
 from langchain_core.tools import StructuredTool
 
-SKILL_DIR = r"..\agents\skills"
+# Add the parent directory to sys.path so we can import our models
+current_file_path = os.path.abspath(__file__)
+current_directory_path = os.path.dirname(current_file_path)
+parent_directory_path = os.path.dirname(current_directory_path)
+root_directory_path = os.path.dirname(parent_directory_path)
+sys.path.insert(0, current_directory_path)
+sys.path.insert(0, parent_directory_path)
+sys.path.insert(0, root_directory_path)
+
+SKILL_DIR = fr"{root_directory_path}\src\agents\skills"
 
 
 def _parse_frontmatter(text: str) -> tuple[dict, str]:
@@ -48,16 +58,15 @@ def _parse_frontmatter(text: str) -> tuple[dict, str]:
     return meta, body.strip()
 
 
-def list_skills(skills_dir: str = SKILL_DIR) -> list[dict]:
+def list_skills() -> list[dict]:
     """
     DISCOVERY PHASE — load only name + description for every skill found.
-
-    Args:
-        skills_dir: Root folder that contains one sub-folder per skill.
 
     Returns:
         List of dicts with keys: name, description, path
     """
+    global skills_dir
+    skills_dir = SKILL_DIR
     root = Path(skills_dir)
     if not root.exists():
         raise FileNotFoundError(f"Skills directory not found: {skills_dir}")
@@ -75,26 +84,26 @@ def list_skills(skills_dir: str = SKILL_DIR) -> list[dict]:
     return skills
 
 
-def read_skill(skills_dir: str, skill_name: str) -> dict:
+def read_skill(skills_dir: str, skill_file: str) -> dict:
     """
     ACTIVATION PHASE — load the full SKILL.md for a specific skill.
 
     Args:
         skills_dir: Root folder that contains skill sub-folders.
-        skill_name: The skill's directory name (e.g. 'behnam-fanitabasi').
+        skill_file: The skill's file name.
 
     Returns:
         Dict with keys: name, description, metadata, body (full Markdown instructions)
     """
-    skill_file = Path(skills_dir) / skill_name
+    skill_file = Path(skills_dir) / skill_file
     if not skill_file.exists():
-        raise FileNotFoundError(f"Skill not found: {skill_name} (looked in {skill_file})")
+        raise FileNotFoundError(f"Skill not found: {skill_file} (looked in {skill_file})")
 
     raw = skill_file.read_text(encoding="utf-8")
     meta, body = _parse_frontmatter(raw)
 
     return {
-        "name":        meta.get("name", skill_name),
+        "name":        meta.get("name", skill_file.name),
         "description": meta.get("description", ""),
         "metadata":    meta,
         "body":        body,
@@ -112,7 +121,7 @@ if __name__ == "__main__":
     skills_dir = r"..\agents\skills"
 
     print("=== DISCOVERED SKILLS ===")
-    for s in list_skills(skills_dir):
+    for s in list_skills():
         print(s)
 
     print(f"\n=== FULL SKILL: {s['file name']} ===")

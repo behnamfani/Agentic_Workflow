@@ -2,7 +2,7 @@
 Application class for managing chatbot interactions.
 """
 from typing import Optional, Tuple, List
-
+import asyncio
 from langchain_core.messages import BaseMessage
 
 from src.agents_utils.chatbot import Chatbot
@@ -66,7 +66,10 @@ class App:
         """
         get_logger().info(f"Processing query: {query[:50]}...")
         try:
-            response, messages = self.bot.ask(query, messages=self.messages)
+            if isinstance(self.bot, Chatbot):
+                response, messages = self.bot.ask(query, messages=self.messages)
+            else:
+                response, messages = asyncio.run(self.bot.ask(query, messages=self.messages))
             self.messages = messages
             get_logger().info(f"Response generated successfully.")
             return response, messages
@@ -74,17 +77,25 @@ class App:
             get_logger().error(f"Error during ask: {e}")
             raise
 
-    def stream_ask(self, query: str):
+    def stream_ask(self, query: str) -> tuple[BaseMessage, list | None]:
         """
         Stream a response from the chatbot.
 
         Args:
             query (str): User query.
+
+        Returns:
+            Tuple[str, List]: Response text and updated message history.
         """
         get_logger().info(f"Processing streaming query: {query[:50]}...")
         try:
-            self.bot.stream_ask(query, messages=self.messages)
+            if isinstance(self.bot, Chatbot):
+                response, messages = self.bot.stream_ask(query, messages=self.messages)
+            else:
+                response, messages = asyncio.run(self.bot.stream_ask(query, messages=self.messages))
+            self.messages = messages
             get_logger().info("Streaming response completed.")
+            return response, messages
         except Exception as e:
             get_logger().error(f"Error during stream_ask: {e}")
             raise
