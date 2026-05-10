@@ -202,5 +202,5 @@ def calculate_age(birth_date: str, target_date: Optional[str] = None) -> str:
 
 
 if __name__ == "__main__":
-    time_mcp.run(transport="stdio")
+    time_mcp.run(transport="stdio", show_banner=False)
     # print(calculate_age('1996-11-24'))

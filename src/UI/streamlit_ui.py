@@ -23,6 +23,7 @@ from src.utils.logging_config import get_logger
 from src.app import App
 from src.utils.validate_instructions import optional_instructions
 from src.agents.ProfileExplainer import profile_explainer, profile_tools
+from src.agents.General import general, general_bot_tools
 
 
 def _load_css_file(css_path: str) -> None:
@@ -120,7 +121,7 @@ def main() -> None:
             st.session_state.selected_bot = selected_bot
 
             bot_system_texts = {
-                "General": "You are a helpful assistant. Use cat emojis when answering.",
+                "General": general.system_text,
                 "ProfileExplainer": profile_explainer.AGENT_INSTRUCTIONS,
                 "BoardGenie": "You are BoardGenie, a helpful assistant designed to assist users in creating and "
                               "managing project boards. Use game emojis when answering.",
@@ -151,7 +152,7 @@ def main() -> None:
                     st.session_state.bot_name = f"Name: {name}"
                     st.session_state.bot_details = f"Details:\n{details}"
                     opt_instruction = f"{st.session_state.bot_name}\n{st.session_state.bot_details}"
-                    tools=None
+                    tools=general_bot_tools.tools
                 elif selected_bot == "ProfileExplainer":
                     st.session_state.bot_language = f"Language: {language}"
                     tools = profile_tools.tools

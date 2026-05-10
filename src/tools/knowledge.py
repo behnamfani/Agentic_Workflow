@@ -11,16 +11,12 @@ wikipedia = None
 
 
 def wikipedia_search(query: str) -> str:
+    """Search Wikipedia for the given query and return a summary of the results."""
     global wikipedia
     if wikipedia is None:
         wikipedia = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
     return wikipedia.run(query)
 
 
-def get_knowledge_tools() -> list:
-    tools = [SemanticScholarQueryRun(), WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())]
-    return tools
-
-
-def get_tools() -> tuple[Type[SemanticScholarQueryRun], StructuredTool]:
-    return SemanticScholarQueryRun, StructuredTool.from_function(wikipedia_search)
+def get_tools() -> tuple[SemanticScholarQueryRun, StructuredTool]:
+    return SemanticScholarQueryRun(), StructuredTool.from_function(wikipedia_search)
