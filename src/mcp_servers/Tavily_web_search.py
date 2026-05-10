@@ -1,12 +1,12 @@
 import ast
+import os
+
 from fastmcp import FastMCP
 from tavily import TavilyClient
 from typing import Union
 
-from src.config import settings
-
 web_mcp = FastMCP("Tavily Web MCP")
-
+TAVILY_API_KEY = os.getenv('TAVILY_API_KEY')
 
 @web_mcp.tool
 def search(text: str) -> str:
@@ -18,7 +18,7 @@ def search(text: str) -> str:
         str: Search results from Tavily.
     """
     try:
-        tavily_client = TavilyClient(api_key=settings.TAVILY_API_KEY)
+        tavily_client = TavilyClient(api_key=TAVILY_API_KEY)
         response = tavily_client.search(
             text,
             auto_parameters=True,
@@ -71,7 +71,7 @@ def extract(urls: Union[str, list]) -> str:
     """
     try:
         urls = normalize_urls(urls)
-        tavily_client = TavilyClient(api_key=settings.TAVILY_API_KEY)
+        tavily_client = TavilyClient(api_key=TAVILY_API_KEY)
         response = tavily_client.extract(
             urls,
             search_depth='basic',
@@ -85,4 +85,4 @@ def extract(urls: Union[str, list]) -> str:
 
 
 if __name__ == "__main__":
-    web_mcp.run(transport="stdio")
+    web_mcp.run(transport="stdio", show_banner=False)

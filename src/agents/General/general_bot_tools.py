@@ -15,6 +15,7 @@ sys.path.insert(0, src_directory_path)
 
 
 from src.tools import knowledge
+from src.config import settings
 tools = list(knowledge.get_tools())
 
 
@@ -23,7 +24,15 @@ mcp_config = {
         "transport": "stdio",
         "command": sys.executable,  # Use the current Python executable
         "args": [str(Path(src_directory_path) / "mcp_servers" / "time_mcp.py")],
-    }
+    },
+    "tavily_web_search": {
+        "transport": "stdio",
+        "command": sys.executable,  # Use the current Python executable
+        "args": [str(Path(src_directory_path) / "mcp_servers" / "Tavily_web_search.py")],
+        "env": {
+            "TAVILY_API_KEY": settings.TAVILY_API_KEY
+        },
+    },
 }
 
 client = MultiServerMCPClient(mcp_config)
