@@ -25,6 +25,16 @@ mcp_config = {
         "command": sys.executable,  # Use the current Python executable
         "args": [str(Path(src_directory_path) / "mcp_servers" / "time_mcp.py")],
     },
+    "calculator_mcp": {
+        "transport": "stdio",
+        "command": sys.executable,  # Use the current Python executable
+        "args": [str(Path(src_directory_path) / "mcp_servers" / "calculator_mcp.py")],
+    },
+    "weather_mcp": {
+        "transport": "stdio",
+        "command": sys.executable,  # Use the current Python executable
+        "args": [str(Path(src_directory_path) / "mcp_servers" / "weather_mcp.py")],
+    },
     "tavily_web_search": {
         "transport": "stdio",
         "command": sys.executable,  # Use the current Python executable
