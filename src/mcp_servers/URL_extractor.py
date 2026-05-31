@@ -114,4 +114,4 @@ def read_url(url: str, screenshot: bool) -> str:
 
 
 if __name__ == "__main__":
-    url_mcp.run(transport="stdio")
+    url_mcp.run(transport="stdio", show_banner=False)

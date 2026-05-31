@@ -307,4 +307,4 @@ def get_weather_alerts(loc: str):
 
 
 if __name__ == "__main__":
-    weather_mcp.run(transport="stdio")
+    weather_mcp.run(transport="stdio", show_banner=False)

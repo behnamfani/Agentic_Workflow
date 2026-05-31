@@ -171,5 +171,5 @@ def list_functions() -> str:
 
 
 if __name__ == "__main__":
-    calculator_mcp.run(transport="stdio")
+    calculator_mcp.run(transport="stdio", show_banner=False)
     # print(calculate("sqrt((5-1)^2 + (3-0)^2)"))
