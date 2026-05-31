@@ -1,0 +1,374 @@
+/* ================================================ */
+/*       Catbot — Bot Selection Page                */
+/*       Drop this in: static/style_selection.css   */
+/* ================================================ */
+
+/* ---- Keyframes ---- */
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: var(--glow-base); }
+    50%       { box-shadow: var(--glow-peak); }
+}
+
+@keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
+}
+
+/* ---- Page Background ---- */
+.stApp {
+    background:
+        radial-gradient(ellipse 70% 45% at 50% -5%,  rgba(14, 165, 233, 0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 30% at 90% 80%,  rgba(99, 102, 241, 0.04) 0%, transparent 50%),
+        linear-gradient(170deg, #0d1628 0%, #020617 55%, #000510 100%);
+    color: #e5e7eb;
+    min-height: 100vh;
+}
+
+/* ---- Sidebar: minimal branding ---- */
+section[data-testid="stSidebar"] {
+    background: #020617 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3 {
+    color: #475569;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* ---- Main title area ---- */
+h1 {
+    background: linear-gradient(120deg, #f1f5f9 20%, #94a3b8 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.03em !important;
+    font-weight: 800 !important;
+}
+
+/* ================================================ */
+/*                  BOT CARDS                       */
+/* ================================================ */
+
+.bot-card {
+    position: relative;
+    background: rgba(13, 20, 38, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 22px;
+    padding: 2.25rem 1.5rem 1.85rem;
+    text-align: center;
+    overflow: hidden;
+    cursor: default;
+
+    /* Layout */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 210px;
+    margin-bottom: 0.75rem;
+
+    /* Entrance animation */
+    opacity: 0;
+    animation: fadeSlideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+
+    /* Hover transition */
+    transition:
+        transform    0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow   0.3s ease,
+        border-color 0.25s ease,
+        background   0.25s ease;
+}
+
+/* Staggered entrance */
+.card-general          { animation-delay: 0.06s; }
+.card-profileexplainer { animation-delay: 0.15s; }
+.card-boardgenie       { animation-delay: 0.24s; }
+
+/* Subtle inner gradient sheen */
+.bot-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 22px;
+    background: linear-gradient(160deg, rgba(255,255,255,0.04) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.bot-card:hover {
+    transform: translateY(-9px);
+    border-color: rgba(255, 255, 255, 0.13);
+    box-shadow: 0 28px 52px rgba(0, 0, 0, 0.5);
+}
+
+/* ---- Card anatomy ---- */
+
+.bot-card-icon {
+    font-size: 3.4rem;
+    line-height: 1;
+    margin-bottom: 0.15rem;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+}
+
+.bot-card:hover .bot-card-icon {
+    transform: scale(1.14);
+}
+
+.bot-card-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin: 0.2rem 0 0;
+    letter-spacing: -0.015em;
+}
+
+.bot-card-tagline {
+    font-size: 0.77rem;
+    color: #475569;
+    margin: 0.05rem 0 0;
+    line-height: 1.55;
+    max-width: 170px;
+}
+
+/* Badge pill (top-left) */
+.bot-card-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    padding: 3px 9px;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #475569;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: all 0.25s ease;
+}
+
+/* Check mark (top-right) */
+.bot-card-check {
+    position: absolute;
+    top: 13px;
+    right: 15px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.card-selected .bot-card-check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ============================================ */
+/*            PER-BOT CARD THEMES               */
+/* ============================================ */
+
+/* ---- General: Blue / Cat-Green accent ---- */
+:root {
+    --general-accent:     rgba(34, 197, 94,  1);
+    --general-glow-soft:  rgba(34, 197, 94,  0.13);
+    --general-glow-ring:  rgba(34, 197, 94,  0.22);
+}
+
+.card-general:hover {
+    border-color: rgba(14, 165, 233, 0.28);
+    box-shadow:
+        0 28px 52px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(14, 165, 233, 0.08);
+}
+
+.card-general.card-selected {
+    --glow-base: 0 0 0 1px var(--general-glow-ring), 0 0 26px var(--general-glow-soft), 0 18px 36px rgba(0,0,0,0.45);
+    --glow-peak: 0 0 0 1px var(--general-glow-ring), 0 0 38px var(--general-glow-soft), 0 18px 36px rgba(0,0,0,0.45);
+
+    background: rgba(14, 165, 233, 0.06);
+    border-color: rgba(34, 197, 94, 0.5);
+    animation: fadeSlideUp 0.45s cubic-bezier(0.22,1,0.36,1) 0.06s forwards,
+               pulseGlow 2.8s ease-in-out 0.5s infinite;
+}
+
+.card-general.card-selected .bot-card-check     { color: #22c55e; }
+.card-general.card-selected .bot-card-icon      { filter: drop-shadow(0 0 10px rgba(34,197,94,0.4)); }
+.card-general.card-selected .bot-card-badge     { background: rgba(34,197,94,0.1); color: #22c55e; border-color: rgba(34,197,94,0.22); }
+
+
+/* ---- ProfileExplainer: Slate/Fog ---- */
+:root {
+    --profile-accent:    rgba(148, 163, 184, 1);
+    --profile-glow-soft: rgba(148, 163, 184, 0.1);
+    --profile-glow-ring: rgba(148, 163, 184, 0.2);
+}
+
+.card-profileexplainer:hover {
+    border-color: rgba(148, 163, 184, 0.22);
+    box-shadow:
+        0 28px 52px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(148, 163, 184, 0.06);
+}
+
+.card-profileexplainer.card-selected {
+    --glow-base: 0 0 0 1px var(--profile-glow-ring), 0 0 26px var(--profile-glow-soft), 0 18px 36px rgba(0,0,0,0.45);
+    --glow-peak: 0 0 0 1px var(--profile-glow-ring), 0 0 38px var(--profile-glow-soft), 0 18px 36px rgba(0,0,0,0.45);
+
+    background: rgba(100, 116, 139, 0.08);
+    border-color: rgba(148, 163, 184, 0.48);
+    animation: fadeSlideUp 0.45s cubic-bezier(0.22,1,0.36,1) 0.15s forwards,
+               pulseGlow 3s ease-in-out 0.5s infinite;
+}
+
+.card-profileexplainer.card-selected .bot-card-check  { color: #94a3b8; }
+.card-profileexplainer.card-selected .bot-card-icon   { filter: drop-shadow(0 0 10px rgba(148,163,184,0.35)); }
+.card-profileexplainer.card-selected .bot-card-badge  { background: rgba(148,163,184,0.09); color: #94a3b8; border-color: rgba(148,163,184,0.17); }
+
+
+/* ---- BoardGenie: Neon Gold ---- */
+:root {
+    --genie-accent:    rgba(255, 229, 92, 1);
+    --genie-glow-soft: rgba(255, 229, 92, 0.11);
+    --genie-glow-ring: rgba(255, 229, 92, 0.22);
+}
+
+.card-boardgenie:hover {
+    border-color: rgba(255, 229, 92, 0.24);
+    box-shadow:
+        0 28px 52px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 229, 92, 0.07);
+}
+
+.card-boardgenie.card-selected {
+    --glow-base: 0 0 0 1px var(--genie-glow-ring), 0 0 26px var(--genie-glow-soft), 0 18px 36px rgba(0,0,0,0.45);
+    --glow-peak: 0 0 0 1px var(--genie-glow-ring), 0 0 38px var(--genie-glow-soft), 0 18px 36px rgba(0,0,0,0.45);
+
+    background: rgba(255, 229, 92, 0.04);
+    border-color: rgba(255, 229, 92, 0.5);
+    animation: fadeSlideUp 0.45s cubic-bezier(0.22,1,0.36,1) 0.24s forwards,
+               pulseGlow 2.6s ease-in-out 0.5s infinite;
+}
+
+.card-boardgenie.card-selected .bot-card-check  { color: #ffe55c; }
+.card-boardgenie.card-selected .bot-card-icon   { filter: drop-shadow(0 0 12px rgba(255,229,92,0.45)); }
+.card-boardgenie.card-selected .bot-card-badge  { background: rgba(255,229,92,0.09); color: #facc15; border-color: rgba(255,229,92,0.18); }
+
+
+/* ================================================ */
+/*                   BUTTONS                        */
+/* ================================================ */
+
+/* "Select →" and "✓ Selected" buttons */
+button[kind="secondary"] {
+    background:    rgba(255, 255, 255, 0.04) !important;
+    border:        1px solid rgba(255, 255, 255, 0.08) !important;
+    color:         #475569 !important;
+    border-radius: 12px !important;
+    font-size:     0.8rem !important;
+    font-weight:   500 !important;
+    letter-spacing: 0.02em !important;
+    transition:    all 0.2s ease !important;
+}
+
+button[kind="secondary"]:hover {
+    background:    rgba(255, 255, 255, 0.08) !important;
+    border-color:  rgba(255, 255, 255, 0.14) !important;
+    color:         #e2e8f0 !important;
+    transform:     none !important;
+    box-shadow:    none !important;
+}
+
+/* "🚀 Start Session" CTA */
+button[kind="primary"] {
+    background:     linear-gradient(135deg, #38bdf8 0%, #2563eb 100%) !important;
+    border:         none !important;
+    color:          #f8fafc !important;
+    font-size:      0.95rem !important;
+    font-weight:    700 !important;
+    border-radius:  14px !important;
+    letter-spacing: 0.02em !important;
+    transition:     all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    box-shadow:     0 4px 14px rgba(37, 99, 235, 0.25) !important;
+}
+
+button[kind="primary"]:hover {
+    background:  linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%) !important;
+    box-shadow:  0 0 0 2px rgba(56, 189, 248, 0.18),
+                 0 10px 28px rgba(37, 99, 235, 0.4) !important;
+    transform:   translateY(-2px) !important;
+}
+
+button[kind="primary"]:active {
+    transform: scale(0.97) !important;
+}
+
+
+/* ================================================ */
+/*              CONFIG SECTION                      */
+/* ================================================ */
+
+/* Inputs */
+input, textarea {
+    background:    rgba(10, 16, 30, 0.9) !important;
+    border:        1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+    color:         #e2e8f0 !important;
+    caret-color:   #38bdf8 !important;
+    transition:    border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+input:focus, textarea:focus {
+    border-color: rgba(56, 189, 248, 0.4) !important;
+    box-shadow:   0 0 0 3px rgba(56, 189, 248, 0.08) !important;
+    outline:      none !important;
+}
+
+input::placeholder, textarea::placeholder {
+    color: #334155 !important;
+}
+
+/* Field labels */
+label, .stTextInput label, .stTextArea label {
+    color:          #64748b !important;
+    font-size:      0.78rem !important;
+    font-weight:    600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.07em !important;
+}
+
+/* Select/dropdown */
+div[data-baseweb="select"] > div {
+    background:    rgba(10, 16, 30, 0.9) !important;
+    border:        1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+    color:         #e2e8f0 !important;
+}
+
+/* ---- Dividers ---- */
+hr {
+    border:     none !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.055) !important;
+    margin:     1.75rem 0 !important;
+}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+    background:    rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.18);
+}

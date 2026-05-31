@@ -24,6 +24,7 @@ from src.app import App
 from src.utils.validate_instructions import optional_instructions
 from src.agents.ProfileExplainer import profile_explainer, profile_tools
 from src.agents.General import general, general_bot_tools
+from src.UI.components import selection
 
 
 def _load_css_file(css_path: str) -> None:
@@ -101,78 +102,74 @@ def main() -> None:
     if st.session_state.bot_started:
         _apply_bot_theme(st.session_state.selected_bot)
     else:
-        _apply_bot_theme("General")
+        _load_css_file(current_directory_path + "/static/style_selection.css")
 
     # ============ BOT SELECTION PAGE =============
     if not st.session_state.bot_started:
 
-        st.title("🐾 Choose Your Bot")
+        selected_bot = selection.bot_selection_style(st)
 
-        with st.sidebar:
-            st.title("Bot Selection")
-            st.markdown("Select a bot and customize its details before starting!")
+        bot_system_texts = {
+            "General": general.system_text,
+            "ProfileExplainer": profile_explainer.AGENT_INSTRUCTIONS,
+            "BoardGenie": (
+                "You are BoardGenie, a helpful assistant designed to assist users in creating "
+                "and managing project boards. Use game emojis when answering."
+            ),
+        }
 
-            bot_options = ["General", "ProfileExplainer", "BoardGenie"]
-            selected_bot = st.selectbox(
-                "Choose Bot",
-                bot_options,
-                key="selected_bot_widget"
-            )
-            st.session_state.selected_bot = selected_bot
-
-            bot_system_texts = {
-                "General": general.system_text,
-                "ProfileExplainer": profile_explainer.AGENT_INSTRUCTIONS,
-                "BoardGenie": "You are BoardGenie, a helpful assistant designed to assist users in creating and "
-                              "managing project boards. Use game emojis when answering.",
-            }
-
-            # Dynamic inputs
+        config_col, _ = st.columns([2, 1])
+        with config_col:
             if selected_bot == "General":
-                name = st.text_input("Name", value="General Assistant")
-                details = st.text_area(
-                    "Details",
-                    value="Personality: Friendly and helpful. Language: English.",
-                    height=100,
-                )
-            elif selected_bot == "ProfileExplainer":
-                language = st.text_input("Language", value="English")
-            elif selected_bot == "BoardGenie":
-                taste_of_game = st.text_input("Taste of game", value="Strategy games")
-                favourite_game = st.text_input("Favourite game", value="Chess")
-                long_term_memory = st.text_input(
-                    "Long term memory",
-                    value="Remembers past games and strategies",
-                )
+                name = st.text_input("Bot Name", value="General Assistant",
+                                     placeholder="e.g. My Assistant")
+                details = st.text_area("Personality & Details",
+                                       value="Personality: Friendly and helpful. Language: English.",
+                                       height=100,
+                                       placeholder="Describe tone, language, areas of focus…")
 
-            if st.button("Start Bot!"):
-                st.session_state.bot_started = True
-                # Store config
+            elif selected_bot == "ProfileExplainer":
+                language = st.text_input("Response Language", value="English",
+                                         placeholder="e.g. English, German, French")
+
+            elif selected_bot == "BoardGenie":
+                c1, c2 = st.columns(2)
+                with c1:
+                    taste_of_game = st.text_input("Game Taste", value="Strategy games")
+                    favourite_game = st.text_input("Favourite Game", value="Chess")
+                with c2:
+                    long_term_memory = st.text_area("Memory Notes",
+                                                    value="Remembers past games and strategies",
+                                                    height=104)
+
+            st.markdown("<div style='margin-top:1.25rem;'>", unsafe_allow_html=True)
+            if st.button("🚀  Start Session", key="start_bot",
+                         type="primary", use_container_width=True):
+
+                # Build opt_instruction per bot
                 if selected_bot == "General":
-                    st.session_state.bot_name = f"Name: {name}"
-                    st.session_state.bot_details = f"Details:\n{details}"
-                    opt_instruction = f"{st.session_state.bot_name}\n{st.session_state.bot_details}"
-                    tools=general_bot_tools.tools
+                    opt_instruction = f"Name: {name}\nDetails:\n{details}"
+                    tools = general_bot_tools.tools
                 elif selected_bot == "ProfileExplainer":
-                    st.session_state.bot_language = f"Language: {language}"
+                    opt_instruction = f"Language: {language}"
                     tools = profile_tools.tools
-                    opt_instruction = f"{st.session_state.bot_language}"
                 elif selected_bot == "BoardGenie":
-                    st.session_state.bot_taste_of_game = taste_of_game
-                    st.session_state.bot_favourite_game = favourite_game
-                    st.session_state.bot_long_term_memory = long_term_memory
                     opt_instruction = ""
-                    tools=None
-                # Initialize app
-                system_texts = bot_system_texts[selected_bot].format(user_instructions_block=optional_instructions(opt_instruction))
+                    tools = None
+
+                system_texts = bot_system_texts[selected_bot].format(
+                    user_instructions_block=optional_instructions(opt_instruction)
+                )
                 st.session_state.app = App(
                     system_text=system_texts,
                     chat_history_limit=8,
                     show_graph=False,
-                    tools=tools
+                    tools=tools,
                 )
+                st.session_state.bot_started = True
                 st.session_state.messages = []
                 st.rerun()
+            st.markdown("</div>", unsafe_allow_html=True)
 
     # ============ CHAT PAGE =============
     else:
