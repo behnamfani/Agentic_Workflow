@@ -1,96 +1,83 @@
 /* ======================================================= */
-/*   BoardGenie — Neon Gold Theme  +  Hex-Grid Background  */
+/* BoardGenie — Golden Strategy Theme                      */
 /* ======================================================= */
 
 :root {
-    --cat-text:           #fff8cc;
-
-    --cat-primary:        #ffe55c;
-    --cat-primary-strong: #ffd84d;
-    --cat-primary-soft:   rgba(255, 229, 92, 0.25);
-
-    --cat-accent:         #facc15;
-    --cat-secondary:      #eab308;
+    --cat-text: #fff6c7;
+    --cat-primary: #ffe36e;
+    --cat-bg: #03040a;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Background: deep navy radial gradient  +  six-gradient hex grid    */
-/*                                                                      */
-/*  The hex grid is built from three pairs of diagonal gradients:       */
-/*  · 30° / 150° edges  (two offset copies for both rows of hexes)     */
-/*  · 60° cross-braces  (two offset copies)                            */
-/*  Tile size 40 × 70 px  (w × h ≈ w × √3·1.75 — gives flat-top hex) */
-/* ------------------------------------------------------------------ */
-.stApp {
-    background-color: #020617;
+/* Background & Grid */
+[data-testid="stAppViewContainer"] {
+    background-color: var(--cat-bg);
     background-image:
-        /* Hex grid — row A */
-        linear-gradient(30deg,  rgba(255,229,92,0.045) 12%, transparent 12.5%, transparent 87.5%, rgba(255,229,92,0.045) 88%),
-        linear-gradient(150deg, rgba(255,229,92,0.045) 12%, transparent 12.5%, transparent 87.5%, rgba(255,229,92,0.045) 88%),
-        /* Hex grid — row B (offset by half tile) */
-        linear-gradient(30deg,  rgba(255,229,92,0.045) 12%, transparent 12.5%, transparent 87.5%, rgba(255,229,92,0.045) 88%),
-        linear-gradient(150deg, rgba(255,229,92,0.045) 12%, transparent 12.5%, transparent 87.5%, rgba(255,229,92,0.045) 88%),
-        /* Cross-braces — row A */
-        linear-gradient(60deg,  rgba(255,229,92,0.07)  25%, transparent 25.5%, transparent 75%, rgba(255,229,92,0.07) 75%),
-        /* Cross-braces — row B */
-        linear-gradient(60deg,  rgba(255,229,92,0.07)  25%, transparent 25.5%, transparent 75%, rgba(255,229,92,0.07) 75%),
-        /* Base deep gradient */
-        radial-gradient(circle at top, #0a1a2f 0%, #020617 100%);
-
-    background-size:
-        40px 70px, 40px 70px,
-        40px 70px, 40px 70px,
-        40px 70px, 40px 70px,
-        cover;
-
-    background-position:
-        0 0,       0 0,
-        20px 35px, 20px 35px,
-        0 0,       20px 35px,
-        0 0;
-
-    background-repeat:
-        repeat, repeat,
-        repeat, repeat,
-        repeat, repeat,
-        no-repeat;
-
-    color: var(--cat-text);
+        radial-gradient(ellipse at 50% 0%, rgba(255,215,90,.12), transparent 45%),
+        linear-gradient(30deg, rgba(255,215,90,.035) 12%, transparent 12.5%, transparent 87.5%, rgba(255,215,90,.035) 88%),
+        linear-gradient(150deg, rgba(255,215,90,.035) 12%, transparent 12.5%, transparent 87.5%, rgba(255,215,90,.035) 88%);
+    background-size: cover, 70px 120px, 70px 120px;
 }
 
-/* ---------------------------------- */
-/*  Assistant message (glow style)    */
-/* ---------------------------------- */
+/* Floating Strategy Symbols Overlay */
+[data-testid="stAppViewContainer"]::before {
+    content: "♟ 🏰 🎲 💎 ⚔ 🗺 ♜ 🎲 🏰 ♟";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0;
+    font-size: 50px;
+    color: rgba(255, 215, 90, 0.08);
+    text-shadow: 0 0 20px rgba(255, 215, 90, 0.3);
+    padding: 50px;
+    line-height: 200px;
+    letter-spacing: 100px;
+    transform: rotate(-10deg);
+    animation: boardgenieFloat 20s ease-in-out infinite;
+}
+
+@keyframes boardgenieFloat {
+    0%, 100% { transform: translateY(0) rotate(-10deg); }
+    50% { transform: translateY(-30px) rotate(-8deg); }
+}
+
+/* Chat & UI Elements */
+div[data-testid="stChatMessage"] {
+    backdrop-filter: blur(12px);
+    border-radius: 18px;
+}
+
 div[data-testid="stChatMessage"][data-role="assistant"] {
-    background: linear-gradient(135deg, #ffe55c, #facc15);
-    color: #1a1a1a;
-    border-left: 4px solid var(--cat-primary);
-    box-shadow: 0 0 12px rgba(255, 229, 92, 0.4);
+    background: linear-gradient(135deg, rgba(255,229,92,.96), rgba(245,183,0,.92));
+    color: #161616;
+    border: 1px solid rgba(255,240,150,.7);
 }
 
-/* ---------------------------------- */
-/*  Buttons                           */
-/* ---------------------------------- */
-button {
-    background: linear-gradient(135deg, #ffe55c, #eab308);
-    color: #1a1a1a;
-    border: none;
+div[data-testid="stChatMessage"][data-role="user"] {
+    background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,215,90,.03));
+    border: 1px solid rgba(255,215,90,.12);
+    color: #fff7d0;
 }
 
-button:hover {
-    box-shadow: 0 0 0 2px var(--cat-primary-soft),
-                0 0 12px rgba(255, 229, 92, 0.5);
-}
-
-/* ---------------------------------- */
-/*  Sidebar                           */
-/* ---------------------------------- */
+/* Sidebar */
 section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #020617, #0a1a2f);
-    border-right: 1px solid rgba(255, 229, 92, 0.12);
+    background: linear-gradient(180deg, #020308, #101522);
+    border-right: 1px solid rgba(255,215,90,.18);
 }
 
-/* Smooth transitions */
-* {
-    transition: all 0.2s ease-in-out;
+/* Inputs & Buttons */
+textarea, input {
+    background: rgba(255,255,255,.04) !important;
+    border: 1px solid rgba(255,215,90,.18) !important;
+    color: #fff5c0 !important;
+    border-radius: 14px !important;
+}
+
+button {
+    background: linear-gradient(135deg, #ffe77a, #e5a900) !important;
+    color: #171717 !important;
+    border-radius: 12px !important;
+    border: none !important;
 }
