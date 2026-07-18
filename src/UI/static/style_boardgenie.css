@@ -1,22 +1,66 @@
-/* BoardGenie - Neon Gold Theme */
+/* ======================================================= */
+/*   BoardGenie — Neon Gold Theme  +  Hex-Grid Background  */
+/* ======================================================= */
+
 :root {
-    --cat-background: radial-gradient(circle at top, #0a1a2f 0%, #020617 100%);
-    --cat-text: #fff8cc;
+    --cat-text:           #fff8cc;
 
-    --cat-primary: #ffe55c;
+    --cat-primary:        #ffe55c;
     --cat-primary-strong: #ffd84d;
-    --cat-primary-soft: rgba(255, 229, 92, 0.25);
+    --cat-primary-soft:   rgba(255, 229, 92, 0.25);
 
-    --cat-accent: #facc15;
-    --cat-secondary: #eab308;
+    --cat-accent:         #facc15;
+    --cat-secondary:      #eab308;
 }
 
+/* ------------------------------------------------------------------ */
+/*  Background: deep navy radial gradient  +  six-gradient hex grid    */
+/*                                                                      */
+/*  The hex grid is built from three pairs of diagonal gradients:       */
+/*  · 30° / 150° edges  (two offset copies for both rows of hexes)     */
+/*  · 60° cross-braces  (two offset copies)                            */
+/*  Tile size 40 × 70 px  (w × h ≈ w × √3·1.75 — gives flat-top hex) */
+/* ------------------------------------------------------------------ */
 .stApp {
-    background: var(--cat-background);
+    background-color: #020617;
+    background-image:
+        /* Hex grid — row A */
+        linear-gradient(30deg,  rgba(255,229,92,0.045) 12%, transparent 12.5%, transparent 87.5%, rgba(255,229,92,0.045) 88%),
+        linear-gradient(150deg, rgba(255,229,92,0.045) 12%, transparent 12.5%, transparent 87.5%, rgba(255,229,92,0.045) 88%),
+        /* Hex grid — row B (offset by half tile) */
+        linear-gradient(30deg,  rgba(255,229,92,0.045) 12%, transparent 12.5%, transparent 87.5%, rgba(255,229,92,0.045) 88%),
+        linear-gradient(150deg, rgba(255,229,92,0.045) 12%, transparent 12.5%, transparent 87.5%, rgba(255,229,92,0.045) 88%),
+        /* Cross-braces — row A */
+        linear-gradient(60deg,  rgba(255,229,92,0.07)  25%, transparent 25.5%, transparent 75%, rgba(255,229,92,0.07) 75%),
+        /* Cross-braces — row B */
+        linear-gradient(60deg,  rgba(255,229,92,0.07)  25%, transparent 25.5%, transparent 75%, rgba(255,229,92,0.07) 75%),
+        /* Base deep gradient */
+        radial-gradient(circle at top, #0a1a2f 0%, #020617 100%);
+
+    background-size:
+        40px 70px, 40px 70px,
+        40px 70px, 40px 70px,
+        40px 70px, 40px 70px,
+        cover;
+
+    background-position:
+        0 0,       0 0,
+        20px 35px, 20px 35px,
+        0 0,       20px 35px,
+        0 0;
+
+    background-repeat:
+        repeat, repeat,
+        repeat, repeat,
+        repeat, repeat,
+        no-repeat;
+
     color: var(--cat-text);
 }
 
-/* Assistant message (glow style) */
+/* ---------------------------------- */
+/*  Assistant message (glow style)    */
+/* ---------------------------------- */
 div[data-testid="stChatMessage"][data-role="assistant"] {
     background: linear-gradient(135deg, #ffe55c, #facc15);
     color: #1a1a1a;
@@ -24,7 +68,9 @@ div[data-testid="stChatMessage"][data-role="assistant"] {
     box-shadow: 0 0 12px rgba(255, 229, 92, 0.4);
 }
 
-/* Buttons */
+/* ---------------------------------- */
+/*  Buttons                           */
+/* ---------------------------------- */
 button {
     background: linear-gradient(135deg, #ffe55c, #eab308);
     color: #1a1a1a;
@@ -36,10 +82,12 @@ button:hover {
                 0 0 12px rgba(255, 229, 92, 0.5);
 }
 
-/* Sidebar */
+/* ---------------------------------- */
+/*  Sidebar                           */
+/* ---------------------------------- */
 section[data-testid="stSidebar"] {
     background: linear-gradient(180deg, #020617, #0a1a2f);
-    border-right: 1px solid rgba(255, 229, 92, 0.15);
+    border-right: 1px solid rgba(255, 229, 92, 0.12);
 }
 
 /* Smooth transitions */
