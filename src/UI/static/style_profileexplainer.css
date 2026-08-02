@@ -2,40 +2,42 @@
 /*   ProfileExplainer — Clean Tech Theme  +  Scan-Line Background     */
 /* ================================================================== */
 
+/* ---- Theme tokens ------------------------------------------------- */
 :root {
     --cat-text:         #e5e7eb;
-
-    --cat-primary:      #e5e7eb;
-    --cat-primary-soft: rgba(229, 231, 235, 0.25);
-
-    --cat-accent:       #94a3b8;
-    --cat-secondary:    #64748b;
+    --cat-primary:      #94a3b8;
+    --cat-primary-soft: rgba(148, 163, 184, 0.25);
+    --cat-accent:       #64748b;
+    --cat-secondary:    #475569;
 }
 
 /* ------------------------------------------------------------------ */
-/*  Scan drift — moves only the first background layer (scan lines)    */
-/*  3 px per 0.8 s at steps(1) = ~1 line per step, very subtle flick  */
+/*   Scan drift animation                                              */
+/*   Shifts only layer 1 (scan lines) by 3 px downward per step.      */
+/*   Layer 2 (dot grid) and layer 3 (base gradient) stay locked.      */
+/*   steps(1) gives a discrete tick rather than a smooth slide —      */
+/*   mimics a document scanner advancing one line at a time.          */
+/*                                                                     */
+/*   3 comma-separated position values match the 3 background layers. */
 /* ------------------------------------------------------------------ */
 @keyframes scanDrift {
-    from { background-position: 0 0,    0 0,   0 0; }
-    to   { background-position: 0 3px,  0 0,   0 0; }
+    from { background-position: 0 0,    0 0, 0 0; }
+    to   { background-position: 0 3px,  0 0, 0 0; }
 }
 
 /* ------------------------------------------------------------------ */
-/*  Background: three layers over a deep slate gradient                */
-/*                                                                      */
-/*  Layer 1: horizontal scan lines (repeating, 1 px every 3 px)        */
-/*           — animated to drift slowly downward (CRT / scanner feel)  */
-/*  Layer 2: dot grid  (28×28 px tile, 1 px dots)                      */
-/*  Layer 3: base radial gradient                                       */
+/*   .stApp — 3 background layers                                     */
+/*   1  Horizontal scan lines  (1 px solid / 2 px gap, auto size)    */
+/*   2  Dot grid               (28×28 px tile)                        */
+/*   3  Base radial gradient   (cover)                                */
 /* ------------------------------------------------------------------ */
 .stApp {
     background-color: #020617;
     background-image:
         repeating-linear-gradient(
             0deg,
-            transparent         0px,
-            transparent         2px,
+            transparent             0px,
+            transparent             2px,
             rgba(148,163,184,0.022) 2px,
             rgba(148,163,184,0.022) 3px
         ),
@@ -45,46 +47,105 @@
     background-size:     auto, 28px 28px, cover;
     background-position: 0 0,  0 0,       0 0;
     background-repeat:   repeat, repeat,  no-repeat;
-
     color: var(--cat-text);
 
-    /* Scan drift — toggle the line below off if the animation feels distracting */
     animation: scanDrift 0.8s steps(1) infinite;
 }
 
-/* ---------------------------------- */
-/*  Assistant message                 */
-/* ---------------------------------- */
-div[data-testid="stChatMessage"][data-role="assistant"] {
-    background: linear-gradient(135deg, #334155, #64748b);
-    color: #f8fafc;
-    border-left: 4px solid var(--cat-primary);
-    box-shadow: 0 0 10px rgba(148, 163, 184, 0.25);
+/* ================================================================== */
+/*   Chat Bubbles — Glassmorphism                                      */
+/* ================================================================== */
+
+div[data-testid="stChatMessage"] {
+    border-radius: 20px;
+    padding:       14px 18px;
+    margin-bottom: 10px;
 }
 
-/* ---------------------------------- */
-/*  Buttons                           */
-/* ---------------------------------- */
+/* User — dark frosted glass */
+div[data-testid="stChatMessage"][data-role="user"] {
+    background:              rgba(2, 6, 23, 0.45);
+    backdrop-filter:         blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(148, 163, 184, 0.08);
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    color: #64748b;
+}
+
+/* Assistant — slate frosted glass */
+div[data-testid="stChatMessage"][data-role="assistant"] {
+    background:              rgba(100, 116, 139, 0.14);
+    backdrop-filter:         blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    border:      1px solid rgba(148, 163, 184, 0.14);
+    border-left: 4px solid var(--cat-primary);
+    color: #f1f5f9;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(148, 163, 184, 0.12);
+}
+
+/* ---- Buttons ----------------------------------------------------- */
 button {
-    background: linear-gradient(135deg, #64748b, #94a3b8);
-    color: #020617;
-    border: none;
+    background:    linear-gradient(135deg, #64748b, #94a3b8);
+    color:         #020617;
+    border:        none;
+    border-radius: 999px;
+    font-weight:   600;
+    transition:    all 0.2s ease;
 }
 
 button:hover {
     box-shadow: 0 0 0 2px var(--cat-primary-soft),
                 0 0 10px rgba(148, 163, 184, 0.3);
+    transform: translateY(-1px);
 }
 
-/* ---------------------------------- */
-/*  Sidebar                           */
-/* ---------------------------------- */
+button:active {
+    transform: scale(0.97);
+}
+
+/* ---- Chat input -------------------------------------------------- */
+textarea, input {
+    background-color: rgba(2, 6, 23, 0.85) !important;
+    color:            var(--cat-text) !important;
+    border-radius:    12px !important;
+    border:           1px solid rgba(148, 163, 184, 0.2) !important;
+    caret-color:      var(--cat-primary) !important;
+}
+
+textarea:focus, input:focus {
+    outline:      none !important;
+    border-color: rgba(148, 163, 184, 0.45) !important;
+    box-shadow:   0 0 0 2px var(--cat-primary-soft) !important;
+}
+
+/* ---- Sidebar ----------------------------------------------------- */
 section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #020617, #0f172a);
-    border-right: 1px solid rgba(148, 163, 184, 0.12);
+    background:   linear-gradient(180deg, #020617, #0f172a);
+    border-right: 1px solid rgba(148, 163, 184, 0.10);
 }
 
-/* Smooth transitions (excluding background-position to avoid fighting the animation) */
+/* ---- Headers ----------------------------------------------------- */
+h1, h2, h3 { color: var(--cat-primary); }
+
+/* ---- Links ------------------------------------------------------- */
+a { color: var(--cat-accent); }
+
+/* ---- Scrollbar --------------------------------------------------- */
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+    background:    rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.4);
+}
+
+/* ---- Transitions — exclude animated .stApp ----------------------- */
 *:not(.stApp) {
     transition: all 0.2s ease-in-out;
 }
