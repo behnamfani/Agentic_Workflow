@@ -54,6 +54,26 @@ section[data-testid="stSidebar"] {
 }
 
 /* ================================================================== */
+/*   Message Slide-In Animations                                       */
+/*   CSS animations fire once per element's DOM lifetime.             */
+/*   When Streamlit appends a new <div> for an incoming message,      */
+/*   the browser treats it as a fresh element and runs the animation. */
+/*   Existing history messages animate on page load (0.38–0.42 s)    */
+/*   then stay put — they are NOT re-triggered on scroll or re-render.*/
+/*   fill-mode: both → element is invisible until animation starts,  */
+/*   then holds opacity:1 after it ends.                              */
+/* ================================================================== */
+@keyframes msgSlideInLeft {
+    from { opacity: 0; transform: translate(-8px, 14px); }
+    to   { opacity: 1; transform: translate(0, 0); }
+}
+
+@keyframes msgSlideInRight {
+    from { opacity: 0; transform: translate(8px, 14px); }
+    to   { opacity: 1; transform: translate(0, 0); }
+}
+
+/* ================================================================== */
 /*   Chat Bubbles — Glassmorphism                                      */
 /* ================================================================== */
 
@@ -73,6 +93,7 @@ div[data-testid="stChatMessage"][data-role="user"] {
         0 4px 20px rgba(0, 0, 0, 0.25),
         inset 0 1px 0 rgba(255, 255, 255, 0.05);
     color: #94a3b8;
+    animation: msgSlideInRight 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Assistant — blue frosted glass */
@@ -86,6 +107,7 @@ div[data-testid="stChatMessage"][data-role="assistant"] {
     box-shadow:
         0 8px 32px rgba(0, 0, 0, 0.25),
         inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    animation: msgSlideInLeft 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Avatar glow */
