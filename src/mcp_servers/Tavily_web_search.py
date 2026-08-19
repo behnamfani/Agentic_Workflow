@@ -3,17 +3,35 @@ import os
 
 from fastmcp import FastMCP
 from tavily import TavilyClient
-from typing import Union
+from typing import Literal, Optional, Union
 
 web_mcp = FastMCP("Tavily Web MCP")
 TAVILY_API_KEY = os.getenv('TAVILY_API_KEY')
 
 @web_mcp.tool
-def search(text: str) -> str:
+def search(
+    text: str,
+    country: str = "germany",
+    max_results: int = 5,
+    search_depth: Literal["basic", "advanced"] = "basic",
+    topic: Literal["general", "news", "finance"] = "general",
+    time_range: Optional[Literal["day", "week", "month", "year"]] = None,
+) -> str:
     """
     Search the internet with Tavily.
     Args:
         text (str): The query string to search the internet.
+        country (str): Boost search results from this country. Should be the
+            full country name in lowercase (e.g. "germany", "united states",
+            "france"). Defaults to "germany".
+        max_results (int): Maximum number of search results to return.
+            Between 1 and 20. Defaults to 5.
+        search_depth (str): "basic" for a fast search, "advanced" for a more
+            thorough (and slower) search. Defaults to "basic".
+        topic (str): The category of the search: "general", "news", or
+            "finance". Defaults to "general".
+        time_range (str, optional): Restrict results to a recent time
+            window: "day", "week", "month", or "year". Omit for no limit.
     Returns:
         str: Search results from Tavily.
     """
@@ -22,10 +40,12 @@ def search(text: str) -> str:
         response = tavily_client.search(
             text,
             auto_parameters=True,
-            search_depth='basic',
-            max_results=5,
+            search_depth=search_depth,
+            topic=topic,
+            time_range=time_range,
+            max_results=max_results,
             include_answer=True,
-            country="germany",
+            country=country,
             include_domains=["*.com", "*.de"]
             # start_date=
         )
@@ -61,11 +81,20 @@ def normalize_urls(urls: Union[str, list]) -> list:
 
 
 @web_mcp.tool
-def extract(urls: Union[str, list]) -> str:
+def extract(
+    urls: Union[str, list],
+    extract_depth: Literal["basic", "advanced"] = "basic",
+    format: Literal["markdown", "text"] = "markdown",
+) -> str:
     """
     Extract the given URL with Tavily.
     Args:
         urls: The URL (str) or list of URLs to be extracted
+        extract_depth (str): "basic" for a fast extraction, "advanced" for a
+            more thorough (and slower) extraction, e.g. of tables or embedded
+            content. Defaults to "basic".
+        format (str): Output format of the extracted content: "markdown" or
+            "text". Defaults to "markdown".
     Returns:
         str: Extraction results from Tavily.
     """
@@ -74,9 +103,8 @@ def extract(urls: Union[str, list]) -> str:
         tavily_client = TavilyClient(api_key=TAVILY_API_KEY)
         response = tavily_client.extract(
             urls,
-            search_depth='basic',
-            max_results=5,
-            format='markdown',
+            extract_depth=extract_depth,
+            format=format,
             timeout=30
         )
         return str(response)
