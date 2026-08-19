@@ -26,6 +26,12 @@ from src.agents.ProfileExplainer import profile_explainer, profile_tools
 from src.agents.General import general, general_bot_tools
 from src.UI.components import selection
 
+SPINNER_TEXTS = {
+    "General":          "Purring... 🐾",
+    "ProfileExplainer": "Analyzing... 📋",
+    "BoardGenie":       "Strategizing... 🎲",
+}
+
 
 def _load_css_file(css_path: str) -> None:
     if os.path.isfile(css_path):
@@ -222,9 +228,10 @@ def main() -> None:
             try:
                 with st.chat_message("assistant", avatar=assistant_avatar):
                     show_answer = st.empty()
-                    with st.spinner("Thinking..."):
+                    spinner_msg = SPINNER_TEXTS.get(selected_bot, "Thinking...")
+                    with st.spinner(spinner_msg):
                         response, _ = st.session_state.app.ask(user_input)
-                        get_logger().info(f"Generated response!")
+                        get_logger().info("Generated response!")
                         show_answer.write(response)
                     st.session_state.messages.append(AIMessage(content=response))
             except Exception as e:

@@ -123,7 +123,6 @@
 
 /* ================================================================== */
 /*   Message Slide-In Animations                                       */
-/*   Same mechanism as General theme — see style.css for full notes.  */
 /* ================================================================== */
 @keyframes msgSlideInLeft {
     from { opacity: 0; transform: translate(-8px, 14px); }
@@ -171,6 +170,67 @@ div[data-testid="stChatMessage"][data-role="assistant"] {
         0 0 24px rgba(255, 229, 92, 0.08),
         inset 0 1px 0 rgba(255, 229, 92, 0.15);
     animation: msgSlideInLeft 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ================================================================== */
+/*   Thinking Indicator — 🎲 Gold reverse-wave gems                   */
+/* ================================================================== */
+
+@keyframes genieThinkGems {
+    0%,100% {
+        background: rgba(255,229,92,0.28);
+        box-shadow: 18px 0 0 rgba(255,229,92,0.28), 36px 0 0 rgba(255,229,92,0.28);
+    }
+    16% {
+        background: rgba(255,229,92,0.28);
+        box-shadow: 18px 0 0 rgba(255,229,92,0.28), 36px 0 0 rgba(255,229,92,1.00);
+    }
+    33% {
+        background: rgba(255,229,92,0.28);
+        box-shadow: 18px 0 0 rgba(255,229,92,1.00), 36px 0 0 rgba(255,229,92,0.28);
+    }
+    50% {
+        background: rgba(255,229,92,1.00);
+        box-shadow: 18px 0 0 rgba(255,229,92,0.28), 36px 0 0 rgba(255,229,92,0.28);
+    }
+    66% {
+        background: rgba(255,229,92,0.28);
+        box-shadow: 18px 0 0 rgba(255,229,92,0.28), 36px 0 0 rgba(255,229,92,0.28);
+    }
+}
+
+/* Hide Streamlit's default SVG circle */
+div[data-testid="stSpinner"] svg,
+[class*="stSpinner"] svg {
+    display: none !important;
+}
+
+/* Three-dot element */
+div[data-testid="stSpinner"]::before,
+[class*="stSpinner"]::before {
+    content:        '';
+    display:        inline-block;
+    flex-shrink:    0;
+    width:          8px;
+    height:         8px;
+    border-radius:  50%;
+    background:     rgba(255, 229, 92, 0.28);
+    box-shadow:     18px 0 0 rgba(255, 229, 92, 0.28),
+                    36px 0 0 rgba(255, 229, 92, 0.28);
+    margin-right:   52px;
+    vertical-align: middle;
+    animation:      genieThinkGems 1.6s ease-in-out infinite;
+}
+
+/* Spinner text */
+div[data-testid="stSpinner"] p,
+div[data-testid="stSpinner"] span,
+[class*="stSpinner"] p,
+[class*="stSpinner"] span {
+    color:          var(--cat-primary);
+    font-size:      0.8rem;
+    font-style:     italic;
+    letter-spacing: 0.05em;
 }
 
 /* ---- Buttons ----------------------------------------------------- */
