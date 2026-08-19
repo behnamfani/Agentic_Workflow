@@ -24,6 +24,7 @@ from src.app import App
 from src.utils.validate_instructions import optional_instructions
 from src.agents.ProfileExplainer import profile_explainer, profile_tools
 from src.agents.General import general, general_bot_tools
+from src.agents.BoardGenie import board_genie, game_tools
 from src.UI.components import selection
 
 SPINNER_TEXTS = {
@@ -160,8 +161,10 @@ def main() -> None:
                     opt_instruction = f"Language: {language}"
                     tools = profile_tools.tools
                 elif selected_bot == "BoardGenie":
-                    opt_instruction = ""
-                    tools = None
+                    opt_instruction = (f"Taste of the game: {taste_of_game}\n"
+                                       f"Favourite game: {favourite_game}"
+                                       f"Memory: {long_term_memory}")
+                    tools = game_tools.tools
 
                 system_texts = bot_system_texts[selected_bot].format(
                     user_instructions_block=optional_instructions(opt_instruction)
