@@ -3,36 +3,42 @@
 </p>
 
 # Agentic_Workflow
-Agentic workflow examples and small tools built on Langgraph and related Python libraries.
+"Catbot" — a Streamlit app with three chat personas (General, ProfileExplainer, BoardGenie), built on LangGraph/LangChain, Groq-hosted LLMs, and FastMCP tool servers.
 
 ## What this repo contains
-- `src/agents/chatbot.py`: Chatbot implementation used in examples.
-- `src/agents/agent.py`: Generic agent that can call tools (see `calculate_age` in the notebook).
-- `notebooks/chatbot_agent_example.ipynb`: Guided examples showing `Chatbot` and `Agent` usage.
+- `src/UI/streamlit_ui.py`: the Streamlit app — bot selection screen, per-bot config, and chat.
+- `src/agents/General/`, `src/agents/ProfileExplainer/`, `src/agents/BoardGenie/`: one system-prompt module + one tools module per persona.
+- `src/agents_utils/chatbot.py`, `src/agents_utils/agent.py`: the two backends (`Chatbot` for tool-less personas, `Agent`/ReAct for personas with tools) wrapped by `src/app.py`'s `App`.
+- `src/tools/mcp_registry.py`: shared, cached MCP (FastMCP stdio) server registry used by all three personas so a server like Tavily only ever spins up once.
+- `src/mcp_servers/`: the FastMCP servers themselves (Tavily web search, time, calculator, weather).
+- `src/llm_chats/Chatgroq.py`: Groq LLM wrapper with primary/backup model fallback, used by every agent/chatbot.
+- `notebooks/chatbot_agent_example.ipynb`: standalone guided examples showing `Chatbot` and `Agent` usage outside the Streamlit app.
+
+See [CLAUDE.md](CLAUDE.md) for the full architecture write-up.
 
 ## Tech stack
 - **Language:** Python 3.11+
-- **Core libs:** `langgraph`, `langchain-core`, `groq`, `fastmcp`, `openai` and ecosystem packages listed in `requirements.txt`.
+- **Core libs:** `langgraph`, `langchain`/`langchain-core`, `langchain-groq`, `langchain-mcp-adapters`, `fastmcp`, `streamlit`, `tavily-python` and ecosystem packages listed in `requirements.txt`.
 
 ## Quickstart (Windows PowerShell)
 ```powershell
 # create virtual env
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+python -m venv venv
+.\venv\Scripts\Activate.ps1
 # install dependencies
 pip install -r requirements.txt
-# run notebooks (launch Jupyter Lab/Notebook)
-jupyter lab
+# set GROQ_API_KEY, TAVILY_API_KEY, etc. in a .env file at the repo root
+# run the app (Streamlit UI on port 8505)
+python start.py
 ```
 
 ## Examples
-- Open `notebooks/chatbot_agent_example.ipynb` to see how the `Chatbot` and `Agent` are instantiated and used.
-- See `src/agents` for implementation details and `src/mcp_servers` for example MCP servers used by agents.
+- Run `python start.py` to use the three personas through the Streamlit UI.
+- Open `notebooks/chatbot_agent_example.ipynb` to see `Chatbot`/`Agent` used standalone, outside the app.
+- See `src/agents/` for each persona's prompt + tools, and `src/mcp_servers/` for the MCP servers they share via `src/tools/mcp_registry.py`.
 
 ## Next steps
-- Run the notebook, modify the `system_text` or tools, and experiment with streaming vs synchronous calls.
-
-Short, focused examples are in `notebooks/` and the core code is in `src/agents/`.
+See `ideas.txt` for planned work, including splitting BoardGenie into a multi-agent LangGraph (recommend / play / teach personas under one supervisor).
 
 ## Quick examples
 

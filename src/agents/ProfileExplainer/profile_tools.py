@@ -12,4 +12,11 @@ sys.path.insert(0, root_directory_path)
 
 
 from src.tools import skill_utils
-tools = list(skill_utils.get_tools())
+from src.tools.mcp_registry import get_mcp_tools
+
+# ProfileExplainer stays grounded strictly in Behnam's CV/skill files, so it
+# intentionally requests no MCP servers; listed for symmetry with the other
+# personas and to make extending it later a one-line change.
+REQUIRED_MCP_SERVERS: list = []
+
+tools = list(skill_utils.get_tools()) + get_mcp_tools(REQUIRED_MCP_SERVERS)
