@@ -10,17 +10,18 @@ TAVILY_API_KEY = os.getenv('TAVILY_API_KEY')
 
 @web_mcp.tool
 def search(
-    text: str,
+    query: str,
     country: str = "germany",
     max_results: int = 5,
     search_depth: Literal["basic", "advanced"] = "basic",
     topic: Literal["general", "news", "finance"] = "general",
     time_range: Optional[Literal["day", "week", "month", "year"]] = None,
+    include_domains: Optional[list[str]] = None,
 ) -> str:
     """
     Search the internet with Tavily.
     Args:
-        text (str): The query string to search the internet.
+        query (str): The query string to search the internet.
         country (str): Boost search results from this country. Should be the
             full country name in lowercase (e.g. "germany", "united states",
             "france"). Defaults to "germany".
@@ -32,13 +33,14 @@ def search(
             "finance". Defaults to "general".
         time_range (str, optional): Restrict results to a recent time
             window: "day", "week", "month", or "year". Omit for no limit.
+        include_domains (list[str], optional): Restrict results to these domains.
+            Omit or pass an empty list to search all domains.
     Returns:
         str: Search results from Tavily.
     """
     try:
         tavily_client = TavilyClient(api_key=TAVILY_API_KEY)
-        response = tavily_client.search(
-            text,
+        search_kwargs = dict(
             auto_parameters=True,
             search_depth=search_depth,
             topic=topic,
@@ -46,9 +48,10 @@ def search(
             max_results=max_results,
             include_answer=True,
             country=country,
-            include_domains=["*.com", "*.de"]
-            # start_date=
         )
+        if include_domains:
+            search_kwargs["include_domains"] = include_domains
+        response = tavily_client.search(query, **search_kwargs)
         return str(response)
     except Exception as e:
         return f"Error happened during search call: {e}. Check the error and try again."
