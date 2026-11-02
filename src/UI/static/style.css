@@ -20,6 +20,10 @@ html, body, [class*="css"] {
     --cat-green-soft: rgba(34, 197, 94, 0.35);
     --cat-blue:       #0ea5e9;
     --cat-blue-soft:  rgba(14, 165, 233, 0.18);
+
+    /* aliases used by the shared sidebar-identity block (ring, status dot, glow) */
+    --cat-primary:      var(--cat-green);
+    --cat-primary-soft: var(--cat-green-soft);
 }
 
 /* ------------------------------------------------------------------ */
@@ -175,6 +179,10 @@ section[data-testid="stSidebar"] {
 .sidebar-session-icon { font-size: 0.85rem; }
 
 
+/* NOTE: Streamlit does not emit a data-role attribute. The role lives on the
+   message's content child as aria-label="Chat message from <name>", so role
+   selectors below use :has() on that label. */
+
 /* ================================================================== */
 /*   Message Slide-In Animations                                       */
 /*   CSS animations fire once per element's DOM lifetime.             */
@@ -207,7 +215,7 @@ div[data-testid="stChatMessage"] {
 }
 
 /* User — dark frosted glass */
-div[data-testid="stChatMessage"][data-role="user"] {
+div[data-testid="stChatMessage"]:has([aria-label="Chat message from user"]) {
     background:              rgba(2, 6, 23, 0.45);
     backdrop-filter:         blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -220,7 +228,7 @@ div[data-testid="stChatMessage"][data-role="user"] {
 }
 
 /* Assistant — blue frosted glass */
-div[data-testid="stChatMessage"][data-role="assistant"] {
+div[data-testid="stChatMessage"]:has([aria-label="Chat message from assistant"]) {
     background:              rgba(14, 165, 233, 0.12);
     backdrop-filter:         blur(16px) saturate(160%);
     -webkit-backdrop-filter: blur(16px) saturate(160%);
@@ -240,26 +248,28 @@ div[data-testid="stChatMessage"][data-role="assistant"] {
 /*   One pseudo-element per role:                                     */
 /*     ::before  →  assistant (left)                                  */
 /*     ::after   →  user      (right)                                 */
-/*   filter:drop-shadow() draws the 1 px border on the hypotenuse    */
-/*   without needing a second DOM node or pseudo-element.             */
+/*   The assistant tail is solid accent colour so it reads as a       */
+/*   pointer growing out of the accent bar (left: -12px = 8px tail    */
+/*   + the 4px border, since absolute offsets measure from the        */
+/*   padding edge). The user tail stays glass.                        */
 /* ================================================================== */
 
 /* Assistant — left-pointing */
-div[data-testid="stChatMessage"][data-role="assistant"]::before {
+div[data-testid="stChatMessage"]:has([aria-label="Chat message from assistant"])::before {
     content:      '';
     position:     absolute;
     top:          18px;
-    left:         -8px;
+    left:         -12px;
     width:        0;
     height:       0;
     border-style: solid;
     border-width: 7px 8px 7px 0;
-    border-color: transparent rgba(14, 165, 233, 0.12) transparent transparent;
-    filter:       drop-shadow(-1px 0 0 rgba(14, 165, 233, 0.18));
+    border-color: transparent var(--cat-green) transparent transparent;
+    filter:       drop-shadow(0 0 4px rgba(34, 197, 94, 0.40));
 }
 
 /* User — right-pointing */
-div[data-testid="stChatMessage"][data-role="user"]::after {
+div[data-testid="stChatMessage"]:has([aria-label="Chat message from user"])::after {
     content:      '';
     position:     absolute;
     top:          18px;
@@ -273,7 +283,7 @@ div[data-testid="stChatMessage"][data-role="user"]::after {
 }
 
 /* Avatar glow */
-div[data-testid="stChatMessage"][data-role="assistant"] img {
+div[data-testid="stChatMessage"]:has([aria-label="Chat message from assistant"]) img {
     border-radius: 50%;
     box-shadow: 0 0 8px var(--cat-green-soft);
 }
@@ -327,10 +337,23 @@ textarea:focus, input:focus {
     }
 }
 
-/* Hide Streamlit's default SVG circle */
-div[data-testid="stSpinner"] svg,
-[class*="stSpinner"] svg {
+/* Streamlit's spinner icon is a CSS-drawn ring (span[data-testid="stSpinnerIcon"]),
+   not an SVG, so it must be hidden by test-id. */
+div[data-testid="stSpinner"] [data-testid="stSpinnerIcon"] {
     display: none !important;
+}
+
+/* ...and its fixed-width wrapper, so no blank gap is left behind
+   (separate rule: a browser without :has() then only drops this one). */
+div[data-testid="stSpinner"] *:has(> [data-testid="stSpinnerIcon"]) {
+    display: none !important;
+}
+
+/* The spinner container is display:block, which put the dots on their own
+   line above the text. Flex puts dots and text on one row. */
+div[data-testid="stSpinner"] {
+    display: flex;
+    align-items: center;
 }
 
 /* Three-dot element — one block + two box-shadow clones */
@@ -395,4 +418,105 @@ a { color: var(--cat-green); }
 /* ---- Transitions — exclude .stApp itself ------------------------- */
 *:not(.stApp) {
     transition: all 0.2s ease-in-out;
+}
+
+/* ================================================================== */
+/*   Micro-interactions                                                */
+/*                                                                      */
+/*   1  Buttons    spring hover-lift, press squish + ring, bounce back  */
+/*   2  Send btn   dimmed while the input is empty, wakes when typing   */
+/*   3  Chat input glow pulse while focused                             */
+/*   4  Avatar     sonar ring while the bot is thinking                 */
+/*   5  Reduced-motion guard for every animation in this file           */
+/*                                                                      */
+/*   Specificity notes (both confirmed in a real browser):              */
+/*   - The global transition rule at the end of the earlier sections    */
+/*     scores (0,1,0) and beats a bare button rule (0,0,1), so the      */
+/*     button rules below use :enabled to score (0,1,1).                */
+/*   - textarea:focus sets box-shadow with !important, and !important   */
+/*     beats animations - so the pulse lives on the box around the      */
+/*     textarea, never on the textarea itself.                          */
+/* ================================================================== */
+
+:root {
+    --spring:      cubic-bezier(0.34, 1.56, 0.64, 1);
+    --pulse-color: rgba(34, 197, 94, 0.38);
+    --pulse-clear: rgba(34, 197, 94, 0);
+}
+
+@keyframes inputPulse {
+    0%, 100% { box-shadow: 0 0 0 0 var(--pulse-clear); }
+    50%      { box-shadow: 0 0 18px 3px var(--pulse-color); }
+}
+
+@keyframes avatarThink {
+    0%   { box-shadow: 0 0 0 0 var(--pulse-color); }
+    70%  { box-shadow: 0 0 0 10px var(--pulse-clear); }
+    100% { box-shadow: 0 0 0 0 var(--pulse-clear); }
+}
+
+/* 1 - Buttons: lift on hover, squish on press, spring back on release.
+   Press is fast (0.08s); release uses the slower spring from :enabled. */
+button:enabled {
+    cursor: pointer;
+    transition: transform  0.4s var(--spring),
+                box-shadow 0.3s ease,
+                filter     0.2s ease,
+                opacity    0.25s ease;
+}
+
+button:enabled:hover {
+    transform: translateY(-2px) scale(1);
+}
+
+button:enabled:active {
+    transform: translateY(0) scale(0.94);
+    filter: brightness(0.92);
+    box-shadow: 0 0 0 5px var(--pulse-color);
+    transition-duration: 0.08s;
+}
+
+/* 2 - Disabled buttons (the send arrow while the input is empty) */
+button:disabled,
+button:disabled:hover {
+    opacity: 0.4;
+    filter: saturate(0.3);
+    transform: none;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+/* 3 - Chat input. The visible rounded box is the direct child of
+   stChatInput (the wrapper itself is square and transparent). */
+div[data-testid="stChatInput"] > div {
+    background:    rgba(2, 6, 23, 0.85);
+    border:        1px solid rgba(56, 189, 248, 0.30);
+    border-radius: 16px;
+    transition:    border-color 0.25s ease;
+}
+
+div[data-testid="stChatInput"] > div:focus-within {
+    border-color: rgba(34, 197, 94, 0.60);
+    animation:    inputPulse 2.4s ease-in-out infinite;
+}
+
+/* The textarea becomes the inside of that box: no border or fill of its own. */
+div[data-testid="stChatInput"] textarea {
+    background-color: transparent !important;
+    border:           none !important;
+    box-shadow:       none !important;
+}
+
+/* 4 - Avatar sonar ring while a spinner is inside the same message */
+div[data-testid="stChatMessage"]:has([data-testid="stSpinner"]) img {
+    animation: avatarThink 1.4s ease-out infinite;
+}
+
+/* 5 - Respect the OS "reduce motion" setting */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration:        0.01ms !important;
+        animation-iteration-count: 1      !important;
+        transition-duration:       0.01ms !important;
+    }
 }
