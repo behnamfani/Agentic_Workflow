@@ -10,13 +10,14 @@ TAVILY_API_KEY = os.getenv('TAVILY_API_KEY')
 
 @web_mcp.tool
 def search(
-    query: str,
+    query: Optional[str] = None,
     country: str = "germany",
     max_results: int = 5,
     search_depth: Literal["basic", "advanced"] = "basic",
     topic: Literal["general", "news", "finance"] = "general",
     time_range: Optional[Literal["day", "week", "month", "year"]] = None,
     include_domains: Optional[list[str]] = None,
+    **kwargs,
 ) -> str:
     """
     Search the internet with Tavily.
@@ -38,6 +39,11 @@ def search(
     Returns:
         str: Search results from Tavily.
     """
+    if not query or not isinstance(query, str):
+        return (
+            "Error: missing required argument 'query' (str). "
+            "Call search again with a 'query' string, e.g. {'query': 'your search text'}."
+        )
     try:
         tavily_client = TavilyClient(api_key=TAVILY_API_KEY)
         search_kwargs = dict(
@@ -85,9 +91,10 @@ def normalize_urls(urls: Union[str, list]) -> list:
 
 @web_mcp.tool
 def extract(
-    urls: Union[str, list],
+    urls: Optional[Union[str, list]] = None,
     extract_depth: Literal["basic", "advanced"] = "basic",
     format: Literal["markdown", "text"] = "markdown",
+    **kwargs,
 ) -> str:
     """
     Extract the given URL with Tavily.
@@ -101,6 +108,11 @@ def extract(
     Returns:
         str: Extraction results from Tavily.
     """
+    if not urls:
+        return (
+            "Error: missing required argument 'urls' (str or list[str]). "
+            "Call extract again with 'urls', e.g. {'urls': 'https://example.com'}."
+        )
     try:
         urls = normalize_urls(urls)
         tavily_client = TavilyClient(api_key=TAVILY_API_KEY)

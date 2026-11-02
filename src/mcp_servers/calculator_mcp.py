@@ -9,7 +9,7 @@ import ast
 import operator
 import math
 import logging
-from typing import Any
+from typing import Any, Optional
 from fastmcp import FastMCP
 
 calculator_mcp = FastMCP("Calculator MCP")
@@ -119,7 +119,7 @@ def evaluate(expression: str) -> str:
 
 
 @calculator_mcp.tool()
-def calculate(expression: str) -> str:
+def calculate(expression: Optional[str] = None, **kwargs) -> str:
     """
     Calculate the result of a mathematical expression.
     Supports:
@@ -131,6 +131,11 @@ def calculate(expression: str) -> str:
     Send the input as {'expression': 'expression_value'}
     :return: The calculated result as a string
     """
+    if not expression or not isinstance(expression, str):
+        return (
+            "Error: missing required argument 'expression' (str). "
+            "Call calculate again with 'expression', e.g. {'expression': '2 + 3 * 4'}."
+        )
     try:
         result = evaluate(expression)
         return result

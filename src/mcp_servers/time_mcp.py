@@ -31,12 +31,17 @@ def get_unix_timestamp() -> str:
 
 
 @time_mcp.tool
-def convert_timestamp_to_date(timestamp: int) -> str:
+def convert_timestamp_to_date(timestamp: Optional[int] = None, **kwargs) -> str:
     """
     Convert a Unix timestamp to human-readable date and time.
     :param timestamp: Unix timestamp (seconds since epoch)
     Send the input as {'timestamp': timestamp_int_value}
     """
+    if timestamp is None:
+        return (
+            "Error: missing required argument 'timestamp' (int, seconds since epoch). "
+            "Call convert_timestamp_to_date again with 'timestamp', e.g. {'timestamp': 1700000000}."
+        )
     try:
         dt = datetime.fromtimestamp(int(timestamp))
         return f"Timestamp {timestamp} converts to: {dt.strftime('%Y-%m-%d %H:%M:%S')}"

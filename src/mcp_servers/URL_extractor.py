@@ -12,6 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import lxml.html.clean as clean
 import lxml.html as LH
 from fastmcp import FastMCP
+from typing import Optional
 
 url_mcp = FastMCP("URL Extractor MCP")
 
@@ -45,7 +46,7 @@ else:
 
 
 @url_mcp.tool()
-def read_url(url: str, screenshot: bool) -> str:
+def read_url(url: Optional[str] = None, screenshot: bool = False, **kwargs) -> str:
     """
     Extract data from web page given URL by reading html content, also taking screenshots and using pytesseract
     :param url: URL string to web page
@@ -53,6 +54,11 @@ def read_url(url: str, screenshot: bool) -> str:
     Send the input as {'url': 'url_value', screenshot: screenshot_bool_value}
     :return: content of the URL page
     """
+    if not url or not isinstance(url, str):
+        return (
+            "Error: missing required argument 'url' (str). "
+            "Call read_url again with 'url', e.g. {'url': 'https://example.com', 'screenshot': false}."
+        )
     try:
         options = webdriver.ChromeOptions()  # Use ChromeOptions for Chrome
         options.add_argument('--headless=new')

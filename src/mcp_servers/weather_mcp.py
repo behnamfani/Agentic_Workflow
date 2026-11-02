@@ -1,6 +1,7 @@
 import requests
 from fastmcp import FastMCP
 from datetime import datetime, timedelta
+from typing import Optional
 import json
 
 weather_mcp = FastMCP("Weather MCP")
@@ -58,12 +59,17 @@ def get_weather_emoji(weather_desc):
 
 
 @weather_mcp.tool
-def get_current_weather(loc: str):
+def get_current_weather(loc: Optional[str] = None, **kwargs):
     """
     Get the current weather conditions with detailed information
     :param loc: Location string (city, coordinates, etc.)
     :return: Current weather details
     """
+    if not loc or not isinstance(loc, str):
+        return (
+            "Error: missing required argument 'loc' (str). "
+            "Call get_current_weather again with 'loc', e.g. {'loc': 'Berlin'}."
+        )
     try:
         weather_data = get_weather_data(loc)
         print(weather_data)
@@ -104,13 +110,18 @@ def get_current_weather(loc: str):
 
 
 @weather_mcp.tool
-def get_weather_forecast(loc: str, days: int = 3):
+def get_weather_forecast(loc: Optional[str] = None, days: int = 3, **kwargs):
     """
     Get the weather forecast for a specified number of days (1-3 days available)
     :param loc: Location string (city, coordinates, etc.)
     :param days: Number of days for forecast (1-3)
     :return: Weather forecast
     """
+    if not loc or not isinstance(loc, str):
+        return (
+            "Error: missing required argument 'loc' (str). "
+            "Call get_weather_forecast again with 'loc', e.g. {'loc': 'Berlin', 'days': 3}."
+        )
     try:
         if days < 1 or days > 3:
             return "Error: Number of days must be between 1 and 3"
@@ -152,13 +163,18 @@ def get_weather_forecast(loc: str, days: int = 3):
 
 
 @weather_mcp.tool
-def get_hourly_weather(loc: str, day: int = 0):
+def get_hourly_weather(loc: Optional[str] = None, day: int = 0, **kwargs):
     """
     Get hourly weather forecast for a specific day
     :param loc: Location string (city, coordinates, etc.)
     :param day: Day number (0=today, 1=tomorrow, 2=day after tomorrow)
     :return: Hourly weather forecast
     """
+    if not loc or not isinstance(loc, str):
+        return (
+            "Error: missing required argument 'loc' (str). "
+            "Call get_hourly_weather again with 'loc', e.g. {'loc': 'Berlin', 'day': 0}."
+        )
     try:
         if day < 0 or day > 2:
             return "Error: Day must be 0 (today), 1 (tomorrow), or 2 (day after tomorrow)"
@@ -203,12 +219,17 @@ def get_hourly_weather(loc: str, day: int = 0):
 
 
 @weather_mcp.tool
-def get_weather_summary(loc: str):
+def get_weather_summary(loc: Optional[str] = None, **kwargs):
     """
     Get a comprehensive weather summary including current conditions and 3-day forecast
     :param loc: Location string (city, coordinates, etc.)
     :return: Complete weather summary
     """
+    if not loc or not isinstance(loc, str):
+        return (
+            "Error: missing required argument 'loc' (str). "
+            "Call get_weather_summary again with 'loc', e.g. {'loc': 'Berlin'}."
+        )
     try:
         weather_data = get_weather_data(loc)
         location_str = format_location(weather_data)
@@ -250,12 +271,17 @@ def get_weather_summary(loc: str):
 
 
 @weather_mcp.tool
-def get_weather_alerts(loc: str):
+def get_weather_alerts(loc: Optional[str] = None, **kwargs):
     """
     Get weather alerts and warnings for the location (if available)
     :param loc: Location string (city, coordinates, etc.)
     :return: Weather alerts information
     """
+    if not loc or not isinstance(loc, str):
+        return (
+            "Error: missing required argument 'loc' (str). "
+            "Call get_weather_alerts again with 'loc', e.g. {'loc': 'Berlin'}."
+        )
     try:
         weather_data = get_weather_data(loc)
         location_str = format_location(weather_data)
