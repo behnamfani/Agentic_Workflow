@@ -11,8 +11,8 @@ sys.path.insert(0, parent_directory_path)
 sys.path.insert(0, root_directory_path)
 
 
-from src.Backend.tools import skill_utils
-from src.Backend.tools.mcp_registry import get_mcp_tools
+from src.backend.tools import skill_utils
+from src.backend.tools.mcp_registry import get_mcp_tools
 
 # ProfileExplainer stays grounded strictly in Behnam's CV/skill files, so it
 # intentionally requests no MCP servers; listed for symmetry with the other

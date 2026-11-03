@@ -7,7 +7,7 @@ from langgraph.graph import StateGraph, START, END
 from PIL import Image
 import io
 
-from src.Backend.llm_chats import Chatgroq
+from src.backend.llm_chats import Chatgroq
 
 
 class State(TypedDict):

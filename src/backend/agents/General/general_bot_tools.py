@@ -11,8 +11,8 @@ sys.path.insert(0, parent_directory_path)
 sys.path.insert(0, src_directory_path)
 
 
-from src.Backend.tools import knowledge
-from src.Backend.tools.mcp_registry import get_mcp_tools
+from src.backend.tools import knowledge
+from src.backend.tools.mcp_registry import get_mcp_tools
 
 REQUIRED_MCP_SERVERS = ["time_mcp", "calculator_mcp", "weather_mcp", "tavily_web_search"]
 

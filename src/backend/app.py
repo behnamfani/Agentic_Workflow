@@ -5,9 +5,9 @@ from typing import Tuple, List
 import asyncio
 from langchain_core.messages import BaseMessage
 
-from src.Backend.agents_utils.chatbot import Chatbot
-from src.Backend.agents_utils.agent import Agent
-from src.Backend.utils.logging_config import get_logger
+from src.backend.agents_utils.chatbot import Chatbot
+from src.backend.agents_utils.agent import Agent
+from src.backend.utils.logging_config import get_logger
 
 
 class App:

@@ -3,7 +3,7 @@ import easyocr
 from concurrent.futures import ThreadPoolExecutor
 from langchain_core.tools import StructuredTool
 
-from src.Backend.config import logger
+from src.backend.config import logger
 
 
 def extract_page(page_data):

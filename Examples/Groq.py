@@ -9,7 +9,7 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.append(current_dir)
 sys.path.append(parent_dir)
     
-from src.Backend.config import settings, logger
+from src.backend.config import settings, logger
 
 os.environ["GROQ_API_KEY"] = settings.GROQ_API_KEY
 

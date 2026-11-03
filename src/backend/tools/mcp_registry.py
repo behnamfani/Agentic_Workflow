@@ -11,13 +11,13 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 
 current_file_path = os.path.abspath(__file__)
 current_directory_path = os.path.dirname(current_file_path)
-src_directory_path = os.path.dirname(current_directory_path)
-root_directory_path = os.path.dirname(src_directory_path)
-for _p in (current_directory_path, src_directory_path, root_directory_path):
+backend_directory_path = os.path.dirname(current_directory_path)
+src_directory_path = os.path.dirname(backend_directory_path)
+for _p in (current_directory_path, src_directory_path, src_directory_path):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from src.Backend.config import settings
+from src.backend.config import settings
 
 MCP_SERVERS_DIR = Path(src_directory_path) / "mcp_servers"
 

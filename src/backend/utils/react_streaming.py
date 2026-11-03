@@ -1,6 +1,6 @@
 from langchain_core.messages.ai import AIMessageChunk
 
-from src.Backend.utils.logging_config import get_logger
+from src.backend.utils.logging_config import get_logger
 
 
 def updates_steaming(chunk: dict, token_usage: dict) -> tuple[str, dict]:

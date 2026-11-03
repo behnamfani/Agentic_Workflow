@@ -7,9 +7,9 @@ from langchain.agents import create_agent
 from PIL import Image
 import io
 
-from src.Backend.llm_chats import Chatgroq
-from src.Backend.utils.logging_config import get_logger
-from src.Backend.utils.react_streaming import updates_steaming, messages_steaming
+from src.backend.llm_chats import Chatgroq
+from src.backend.utils.logging_config import get_logger
+from src.backend.utils.react_streaming import updates_steaming, messages_steaming
 
 
 class Agent:
@@ -109,7 +109,7 @@ class Agent:
 if __name__ == "__main__":
     # Testing chatbot workflow
     messages = []
-    from src.Backend.tools import PDF_Reader
+    from src.backend.tools import PDF_Reader
 
     tool = PDF_Reader.get_tool()
     # Example improved system prompt for your Agent

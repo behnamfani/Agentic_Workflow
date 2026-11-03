@@ -4,8 +4,8 @@ from langchain_core.messages import AIMessage, BaseMessage
 from langchain_groq import ChatGroq
 from typing import  Union
 
-from src.Backend.config import settings, logger
-from src.Backend.utils import (
+from src.backend.config import settings, logger
+from src.backend.utils import (
     visual_path,
     visual_public_url,
     is_url,

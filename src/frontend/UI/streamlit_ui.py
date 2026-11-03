@@ -18,13 +18,13 @@ sys.path.insert(0, current_directory_path)
 sys.path.insert(0, parent_directory_path)
 sys.path.insert(0, root_directory_path)
 
-from src.Backend.utils import get_logger
-from src.Backend.app import App
-from src.Backend.utils.validate_instructions import optional_instructions
-from src.Backend.agents.ProfileExplainer import profile_tools
-from src.Backend.agents.ProfileExplainer import profile_explainer
-from src.Backend.agents.General import general, general_bot_tools
-from src.Backend.agents.BoardGenie import game_tools
+from src.backend.utils import get_logger
+from src.backend.app import App
+from src.backend.utils.validate_instructions import optional_instructions
+from src.backend.agents.ProfileExplainer import profile_tools
+from src.backend.agents.ProfileExplainer import profile_explainer
+from src.backend.agents.General import general, general_bot_tools
+from src.backend.agents.BoardGenie import game_tools
 from src.UI.components import selection
 
 SPINNER_TEXTS = {
