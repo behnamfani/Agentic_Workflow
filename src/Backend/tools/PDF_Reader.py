@@ -1,9 +1,9 @@
 import fitz  # PyMuPDF
 import easyocr
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 from langchain_core.tools import StructuredTool
 
-from src.config import logger
+from src.Backend.config import logger
 
 
 def extract_page(page_data):

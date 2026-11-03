@@ -1,6 +1,5 @@
 import logging
-import sys
-from src.config import logger
+from src.Backend.config import logger
 
 # Global variable to hold the user's logger
 _user_logger = None

@@ -11,8 +11,8 @@ sys.path.insert(0, parent_directory_path)
 sys.path.insert(0, src_directory_path)
 
 
-from src.tools import knowledge
-from src.tools.mcp_registry import get_mcp_tools
+from src.Backend.tools import knowledge
+from src.Backend.tools.mcp_registry import get_mcp_tools
 
 REQUIRED_MCP_SERVERS = ["tavily_web_search"]
 

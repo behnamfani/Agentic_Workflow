@@ -1,17 +1,15 @@
-from typing import Annotated, Any, Literal, Tuple, List
+from typing import Any, Literal
 import asyncio
 from langchain_core.messages import BaseMessage
 from langgraph.graph.state import CompiledStateGraph
-from typing_extensions import TypedDict
-from langgraph.graph import StateGraph, START, END
 # from langgraph.prebuilt import create_react_agent
 from langchain.agents import create_agent
 from PIL import Image
 import io
 
-from src.llm_chats import Chatgroq
-from src.utils.logging_config import get_logger
-from src.utils.react_streaming import updates_steaming, messages_steaming
+from src.Backend.llm_chats import Chatgroq
+from src.Backend.utils.logging_config import get_logger
+from src.Backend.utils.react_streaming import updates_steaming, messages_steaming
 
 
 class Agent:
@@ -111,7 +109,7 @@ class Agent:
 if __name__ == "__main__":
     # Testing chatbot workflow
     messages = []
-    from src.tools import PDF_Reader
+    from src.Backend.tools import PDF_Reader
 
     tool = PDF_Reader.get_tool()
     # Example improved system prompt for your Agent

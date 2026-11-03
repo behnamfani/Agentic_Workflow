@@ -108,7 +108,7 @@ python start.py
 - Chatbot (synchronous):
 
 ```python
-from src.agents_utils.chatbot import Chatbot
+from src.Backend.agents_utils import Chatbot
 
 bot = Chatbot(system_text="You are a helpful assistant that tells everything in jokes.", show_graph=False)
 messages = []
@@ -126,7 +126,7 @@ bot.stream_ask(query="Great, thanks", messages=messages)
 - Agent with a simple tool (async):
 
 ```python
-from src.agents_utils.agent import Agent
+from src.Backend.agents_utils.agent import Agent
 import asyncio
 
 

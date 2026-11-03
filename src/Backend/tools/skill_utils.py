@@ -118,7 +118,7 @@ if __name__ == "__main__":
     import sys
     import json
 
-    skills_dir = r"..\agents\skills"
+    skills_dir = r"../agents/skills"
 
     print("=== DISCOVERED SKILLS ===")
     for s in list_skills():

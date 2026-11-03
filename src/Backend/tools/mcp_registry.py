@@ -17,7 +17,7 @@ for _p in (current_directory_path, src_directory_path, root_directory_path):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from src.config import settings
+from src.Backend.config import settings
 
 MCP_SERVERS_DIR = Path(src_directory_path) / "mcp_servers"
 

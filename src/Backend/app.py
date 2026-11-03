@@ -1,13 +1,13 @@
 """
 Application class for managing chatbot interactions.
 """
-from typing import Optional, Tuple, List
+from typing import Tuple, List
 import asyncio
 from langchain_core.messages import BaseMessage
 
-from src.agents_utils.chatbot import Chatbot
-from src.agents_utils.agent import Agent
-from src.utils.logging_config import get_logger
+from src.Backend.agents_utils.chatbot import Chatbot
+from src.Backend.agents_utils.agent import Agent
+from src.Backend.utils.logging_config import get_logger
 
 
 class App:
