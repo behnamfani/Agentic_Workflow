@@ -5,7 +5,7 @@ from langchain_groq import ChatGroq
 from typing import  Union
 
 from src.backend.config import settings, logger
-from src.backend.utils import (
+from src.backend.utils.create_visual_payload import (
     visual_path,
     visual_public_url,
     is_url,

@@ -11,10 +11,10 @@ sys.path.insert(0, parent_directory_path)
 sys.path.insert(0, src_directory_path)
 
 
-from src.backend.tools import knowledge
 from src.backend.tools.mcp_registry import get_mcp_tools
+from src.backend.tools.tool_registry import get_tools
 
 REQUIRED_MCP_SERVERS = ["tavily_web_search"]
+REQUIRED_TOOLS = ["knowledge_tools"]
 
-scholar_tool, wiki_tool = knowledge.get_tools()
-tools = get_mcp_tools(REQUIRED_MCP_SERVERS) + [wiki_tool]
+tools = get_mcp_tools(REQUIRED_MCP_SERVERS) + get_tools(REQUIRED_TOOLS)

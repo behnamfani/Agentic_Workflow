@@ -18,5 +18,5 @@ def wikipedia_search(query: str) -> str:
     return wikipedia.run(query)
 
 
-def get_tools() -> tuple[SemanticScholarQueryRun, StructuredTool]:
-    return SemanticScholarQueryRun(), StructuredTool.from_function(wikipedia_search)
+async def get_tools() -> list:
+    return [SemanticScholarQueryRun(), StructuredTool.from_function(wikipedia_search)]
