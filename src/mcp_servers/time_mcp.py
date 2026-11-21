@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any, Dict
 from fastmcp import FastMCP
 from datetime import datetime, timedelta
 import pytz
@@ -31,7 +31,9 @@ def get_unix_timestamp() -> str:
 
 
 @time_mcp.tool
-def convert_timestamp_to_date(timestamp: Optional[int] = None, **kwargs) -> str:
+def convert_timestamp_to_date(
+    timestamp: Optional[int] = None, kwargs: Optional[Dict[str, Any]] = None
+) -> str:
     """
     Convert a Unix timestamp to human-readable date and time.
     :param timestamp: Unix timestamp (seconds since epoch)

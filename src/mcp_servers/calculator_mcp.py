@@ -9,7 +9,7 @@ import ast
 import operator
 import math
 import logging
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 from fastmcp import FastMCP
 
 calculator_mcp = FastMCP("Calculator MCP")
@@ -119,7 +119,7 @@ def evaluate(expression: str) -> str:
 
 
 @calculator_mcp.tool()
-def calculate(expression: Optional[str] = None, **kwargs) -> str:
+def calculate(expression: Optional[str] = None, kwargs: Optional[Dict[str, Any]] = None) -> str:
     """
     Calculate the result of a mathematical expression.
     Supports:

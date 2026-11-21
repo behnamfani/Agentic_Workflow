@@ -1,7 +1,7 @@
 import requests
 from fastmcp import FastMCP
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, Any, Dict
 import json
 
 weather_mcp = FastMCP("Weather MCP")
@@ -59,7 +59,7 @@ def get_weather_emoji(weather_desc):
 
 
 @weather_mcp.tool
-def get_current_weather(loc: Optional[str] = None, **kwargs):
+def get_current_weather(loc: Optional[str] = None, kwargs: Optional[Dict[str, Any]] = None):
     """
     Get the current weather conditions with detailed information
     :param loc: Location string (city, coordinates, etc.)
@@ -110,7 +110,9 @@ def get_current_weather(loc: Optional[str] = None, **kwargs):
 
 
 @weather_mcp.tool
-def get_weather_forecast(loc: Optional[str] = None, days: int = 3, **kwargs):
+def get_weather_forecast(
+    loc: Optional[str] = None, days: int = 3, kwargs: Optional[Dict[str, Any]] = None
+):
     """
     Get the weather forecast for a specified number of days (1-3 days available)
     :param loc: Location string (city, coordinates, etc.)
@@ -163,7 +165,7 @@ def get_weather_forecast(loc: Optional[str] = None, days: int = 3, **kwargs):
 
 
 @weather_mcp.tool
-def get_hourly_weather(loc: Optional[str] = None, day: int = 0, **kwargs):
+def get_hourly_weather(loc: Optional[str] = None, day: int = 0, kwargs: Optional[Dict[str, Any]] = None):
     """
     Get hourly weather forecast for a specific day
     :param loc: Location string (city, coordinates, etc.)
@@ -219,7 +221,7 @@ def get_hourly_weather(loc: Optional[str] = None, day: int = 0, **kwargs):
 
 
 @weather_mcp.tool
-def get_weather_summary(loc: Optional[str] = None, **kwargs):
+def get_weather_summary(loc: Optional[str] = None, kwargs: Optional[Dict[str, Any]] = None):
     """
     Get a comprehensive weather summary including current conditions and 3-day forecast
     :param loc: Location string (city, coordinates, etc.)
@@ -271,7 +273,7 @@ def get_weather_summary(loc: Optional[str] = None, **kwargs):
 
 
 @weather_mcp.tool
-def get_weather_alerts(loc: Optional[str] = None, **kwargs):
+def get_weather_alerts(loc: Optional[str] = None, kwargs: Optional[Dict[str, Any]] = None):
     """
     Get weather alerts and warnings for the location (if available)
     :param loc: Location string (city, coordinates, etc.)

@@ -1,0 +1,396 @@
+/* ================================================================== */
+/*   Catbot — Welcome page                                             */
+/*                                                                      */
+/*   Loaded ON TOP of style.css (the cat theme: paw prints, green).    */
+/*                                                                      */
+/*   ONE clock drives the whole scene: --welcome-total (7.8 s).        */
+/*   Change that single value to speed everything up or slow it down;  */
+/*   then keep AUTO_ADVANCE_SECONDS in welcome_page.py ~1.2 s longer.  */
+/*                                                                      */
+/*   Timeline (seconds)                                                */
+/*     0.00  page fades in                                             */
+/*     0.55  cat pops up from behind the ledge (1.25 s: settled)       */
+/*     1.20  pupils dilate                                             */
+/*     1.45  bubble 1  "Meow! Hello, human"                            */
+/*     1.55  paw waves (until 3.8 s)                                   */
+/*     2.15  eyes look left, then right, then at you                   */
+/*     3.95  bubble 2  "Pick a bot. I'm totally not watching"          */
+/*     4.25  shifty eyes + blep (tongue) until 6.0 s                   */
+/*     6.25  bubble 3  "nap time", eyes droop                          */
+/*     6.40  cat ducks away (gone by 7.3 s)                            */
+/*     7.25  page fades out, then Python moves on                      */
+/* ================================================================== */
+
+:root {
+    --welcome-total: 7.8s;
+    --w-body:  #05070d;
+    --w-ledge: #0a1222;
+    --w-green: #22c55e;
+}
+
+/* ---- clean splash: no sidebar, toolbar or running indicator ---------- */
+section[data-testid="stSidebar"],
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"],
+[data-testid="stToolbar"],
+[data-testid="stStatusWidget"] {
+    display: none !important;
+}
+
+header[data-testid="stHeader"] {
+    background: transparent;
+}
+
+[data-testid="stMainBlockContainer"] {
+    max-width: 720px !important;
+    margin: 0 auto !important;
+    padding-top: 3vh !important;
+}
+
+/* ---- layout ----------------------------------------------------------- */
+.welcome-stage {
+    text-align: center;
+}
+
+.bubble-row {
+    position: relative;
+    width: min(460px, 92vw);
+    height: 66px;
+    margin: 0 auto;
+}
+
+.bubble {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 18px;
+    margin: 0 auto;
+    width: max-content;
+    max-width: 94%;
+    padding: 11px 20px;
+    border-radius: 18px;
+    background: #0a1628;
+    border: 1.5px solid rgba(34, 197, 94, 0.55);
+    border-left: 4px solid var(--w-green);
+    color: #e0f2fe;
+    font-size: 1.02rem;
+    font-weight: 600;
+    line-height: 1.4;
+    box-shadow: 0 0 26px rgba(34, 197, 94, 0.16), 0 8px 24px rgba(0, 0, 0, 0.45);
+    transform-origin: 50% 100%;
+}
+
+/* speech-bubble tail: a rotated square with two visible borders */
+.bubble::after {
+    content: '';
+    position: absolute;
+    left: calc(50% - 8px);
+    bottom: -9px;
+    width: 14px;
+    height: 14px;
+    background: #0a1628;
+    border-right: 1.5px solid rgba(34, 197, 94, 0.55);
+    border-bottom: 1.5px solid rgba(34, 197, 94, 0.55);
+    border-radius: 0 0 4px 0;
+    transform: rotate(45deg);
+}
+
+/* without animation only the first bubble is shown (greeting pose) */
+.bubble.b2,
+.bubble.b3 {
+    opacity: 0;
+}
+
+.cat-window {
+    position: relative;
+    width: min(440px, 88vw, 54vh);
+    margin: 0 auto;
+}
+
+.cat-moon {
+    position: absolute;
+    inset: -4% -14% 8% -14%;
+    background: radial-gradient(closest-side, rgba(34, 197, 94, 0.20) 0%, rgba(14, 165, 233, 0.07) 55%, transparent 100%);
+    pointer-events: none;
+}
+
+.cat-svg {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    filter: drop-shadow(0 0 9px rgba(34, 197, 94, 0.30));
+    -webkit-mask-image: linear-gradient(to bottom, #000 88%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 88%, transparent 100%);
+}
+
+.w-title {
+    margin: 6px 0 2px;
+    font-size: clamp(2.2rem, 7vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    background: linear-gradient(120deg, #f1f5f9 15%, #22c55e 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.w-sub {
+    margin: 0 0 14px;
+    color: #94a3b8;
+    font-size: 0.92rem;
+}
+
+/* ---- the Enter button (swap for the login form later) ------------------ */
+.st-key-welcome_enter {
+    align-self: center;
+    margin: 0 auto;
+    width: fit-content;
+}
+
+.st-key-welcome_enter button {
+    padding: 0.55rem 2.2rem;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: #04130a;
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    border: none;
+    border-radius: 999px;
+    animation: enterPulse 2.2s ease-out 1.6s infinite;
+}
+
+.st-key-welcome_enter button:hover {
+    background: linear-gradient(135deg, #86efac, #22c55e);
+}
+
+/* ---- the cat: colours ---------------------------------------------------- */
+/* Neon outline trick: every silhouette shape is drawn twice. The first copy  */
+/* (.rim) is fat and green, the second (.fill) is slimmer and black, so what  */
+/* shows is a clean green band around the UNION of the shapes.                */
+.cat-svg .rim {
+    fill: var(--w-green);
+    stroke: var(--w-green);
+    stroke-width: 14;
+    stroke-linejoin: round;
+    opacity: 0.72;
+}
+
+.cat-svg .fill {
+    fill: var(--w-body);
+    stroke: var(--w-body);
+    stroke-width: 8;
+    stroke-linejoin: round;
+}
+
+.cat-svg .t-rim,
+.cat-svg .t-fill {
+    fill: none;
+    stroke-linecap: round;
+}
+
+.cat-svg .t-rim  { stroke: var(--w-green); stroke-width: 30; opacity: 0.72; }
+.cat-svg .t-fill { stroke: var(--w-body);  stroke-width: 24; }
+
+.cat-svg .inner-ear { fill: #2a1630; stroke: #2a1630; stroke-width: 6; stroke-linejoin: round; }
+.cat-svg .mouth     { fill: none; stroke: #475569; stroke-width: 4; stroke-linecap: round; }
+.cat-svg .whisk     { fill: none; stroke: rgba(226, 232, 240, 0.6); stroke-width: 2; stroke-linecap: round; }
+.cat-svg .ledge     { fill: var(--w-ledge); }
+.cat-svg .ledge-line { fill: var(--w-green); opacity: 0.75; }
+
+/* ---- the cat: base pose = "greeting" (what you see with animations off) -- */
+.cat-svg .cat-tilt  { transform-origin: 200px 330px; }
+.cat-svg .arm       { transform-box: fill-box; transform-origin: 50% 100%; transform: rotate(24deg); }
+.cat-svg .lid       { transform-box: fill-box; transform-origin: 50% 0%;   transform: scaleY(0); }
+.cat-svg .pupil     { transform-box: fill-box; transform-origin: 50% 50%; }
+.cat-svg .tongue    { transform-box: fill-box; transform-origin: 50% 0%;   transform: scaleY(0); }
+.cat-svg .tail      { transform-box: fill-box; transform-origin: 100% 100%; }
+.cat-svg .whisk-l   { transform-box: fill-box; transform-origin: 100% 50%; }
+.cat-svg .whisk-r   { transform-box: fill-box; transform-origin: 0% 50%; }
+
+/* ---- timeline keyframes (generated from the table above) ----------------- */
+/* cat: pops up 0.55-1.25s, ducks away 6.40-7.30s */
+@keyframes catRise {
+          0% { transform: translateY(400px); }   /* 0.00s */
+      7.051% { transform: translateY(400px); animation-timing-function: cubic-bezier(.34, 1.35, .64, 1); }   /* 0.55s */
+     16.026% { transform: translateY(0); }   /* 1.25s */
+     82.051% { transform: translateY(0); animation-timing-function: ease-out; }   /* 6.40s */
+     84.359% { transform: translateY(-16px); animation-timing-function: cubic-bezier(.55, 0, .8, .35); }   /* 6.58s */
+      93.59% { transform: translateY(400px); }   /* 7.30s */
+        100% { transform: translateY(400px); }   /* 7.80s */
+}
+
+/* pupils */
+@keyframes pupilLife {
+          0% { transform: translateX(0px) scaleX(1); }   /* 0.00s */
+     12.821% { transform: translateX(0px) scaleX(1); }   /* 1.00s */
+     15.385% { transform: translateX(0px) scaleX(2.4); }   /* 1.20s */
+     21.154% { transform: translateX(0px) scaleX(2.4); }   /* 1.65s */
+         25% { transform: translateX(0px) scaleX(1); }   /* 1.95s */
+     27.564% { transform: translateX(-11px) scaleX(1); }   /* 2.15s */
+     32.692% { transform: translateX(-11px) scaleX(1); }   /* 2.55s */
+     35.897% { transform: translateX(11px) scaleX(1); }   /* 2.80s */
+     41.026% { transform: translateX(11px) scaleX(1); }   /* 3.20s */
+     44.231% { transform: translateX(0px) scaleX(1); }   /* 3.45s */
+     51.923% { transform: translateX(0px) scaleX(1); }   /* 4.05s */
+     54.487% { transform: translateX(-12px) scaleX(1); }   /* 4.25s */
+     58.333% { transform: translateX(-12px) scaleX(1); }   /* 4.55s */
+     60.897% { transform: translateX(12px) scaleX(1); }   /* 4.75s */
+     64.744% { transform: translateX(12px) scaleX(1); }   /* 5.05s */
+     67.308% { transform: translateX(-12px) scaleX(1); }   /* 5.25s */
+     70.513% { transform: translateX(-12px) scaleX(1); }   /* 5.50s */
+     73.718% { transform: translateX(0px) scaleX(1); }   /* 5.75s */
+     77.564% { transform: translateX(0px) scaleX(1); }   /* 6.05s */
+      81.41% { transform: translateX(0px) scaleX(1.7); }   /* 6.35s */
+        100% { transform: translateX(0px) scaleX(1.7); }   /* 7.80s */
+}
+
+/* eyelids */
+@keyframes lidLife {
+          0% { transform: scaleY(0); }   /* 0.00s */
+      31.41% { transform: scaleY(0); }   /* 2.45s */
+     32.436% { transform: scaleY(1); }   /* 2.53s */
+     34.359% { transform: scaleY(0); }   /* 2.68s */
+     63.077% { transform: scaleY(0); }   /* 4.92s */
+     64.103% { transform: scaleY(1); }   /* 5.00s */
+     65.897% { transform: scaleY(0); }   /* 5.14s */
+     77.564% { transform: scaleY(0); }   /* 6.05s */
+      81.41% { transform: scaleY(0.55); }   /* 6.35s */
+     83.974% { transform: scaleY(0.55); }   /* 6.55s */
+     87.179% { transform: scaleY(1); }   /* 6.80s */
+        100% { transform: scaleY(1); }   /* 7.80s */
+}
+
+/* eye glow */
+@keyframes haloLife {
+          0% { opacity: 0; }   /* 0.00s */
+     11.538% { opacity: 0; }   /* 0.90s */
+     16.667% { opacity: 1; }   /* 1.30s */
+     78.205% { opacity: 1; }   /* 6.10s */
+     87.179% { opacity: 0; }   /* 6.80s */
+        100% { opacity: 0; }   /* 7.80s */
+}
+
+/* paw: raised 1.55-2.0s, waves to 3.8s, lowers by 4.2s */
+@keyframes pawWave {
+          0% { transform: rotate(168deg); }   /* 0.00s */
+     19.872% { transform: rotate(168deg); animation-timing-function: cubic-bezier(.3, 1.3, .6, 1); }   /* 1.55s */
+     25.641% { transform: rotate(24deg); }   /* 2.00s */
+     29.487% { transform: rotate(0deg); }   /* 2.30s */
+     33.333% { transform: rotate(26deg); }   /* 2.60s */
+     37.179% { transform: rotate(0deg); }   /* 2.90s */
+     41.026% { transform: rotate(26deg); }   /* 3.20s */
+     44.872% { transform: rotate(0deg); }   /* 3.50s */
+     48.718% { transform: rotate(26deg); }   /* 3.80s */
+     53.846% { transform: rotate(168deg); }   /* 4.20s */
+        100% { transform: rotate(168deg); }   /* 7.80s */
+}
+
+/* blep 4.3-6.0s */
+@keyframes tongueLife {
+          0% { transform: scaleY(0); }   /* 0.00s */
+     55.128% { transform: scaleY(0); animation-timing-function: cubic-bezier(.34, 1.5, .64, 1); }   /* 4.30s */
+     58.333% { transform: scaleY(1); }   /* 4.55s */
+         75% { transform: scaleY(1); }   /* 5.85s */
+     77.564% { transform: scaleY(0); }   /* 6.05s */
+        100% { transform: scaleY(0); }   /* 7.80s */
+}
+
+/* speech 1: 1.45-3.70s */
+@keyframes bubble1 {
+          0% { opacity: 0; transform: translateY(14px) scale(.6); }   /* 0.00s */
+      18.59% { opacity: 0; transform: translateY(14px) scale(.6); animation-timing-function: cubic-bezier(.34, 1.5, .64, 1); }   /* 1.45s */
+     22.692% { opacity: 1; transform: translateY(0) scale(1); }   /* 1.77s */
+     47.436% { opacity: 1; transform: translateY(0) scale(1); animation-timing-function: ease-in; }   /* 3.70s */
+     50.256% { opacity: 0; transform: translateY(-8px) scale(.9); }   /* 3.92s */
+        100% { opacity: 0; transform: translateY(-8px) scale(.9); }   /* 7.80s */
+}
+
+/* speech 2: 3.95-6.00s */
+@keyframes bubble2 {
+          0% { opacity: 0; transform: translateY(14px) scale(.6); }   /* 0.00s */
+     50.641% { opacity: 0; transform: translateY(14px) scale(.6); animation-timing-function: cubic-bezier(.34, 1.5, .64, 1); }   /* 3.95s */
+     54.744% { opacity: 1; transform: translateY(0) scale(1); }   /* 4.27s */
+     76.923% { opacity: 1; transform: translateY(0) scale(1); animation-timing-function: ease-in; }   /* 6.00s */
+     79.744% { opacity: 0; transform: translateY(-8px) scale(.9); }   /* 6.22s */
+        100% { opacity: 0; transform: translateY(-8px) scale(.9); }   /* 7.80s */
+}
+
+/* speech 3: 6.25-7.05s */
+@keyframes bubble3 {
+          0% { opacity: 0; transform: translateY(14px) scale(.6); }   /* 0.00s */
+     80.128% { opacity: 0; transform: translateY(14px) scale(.6); animation-timing-function: cubic-bezier(.34, 1.5, .64, 1); }   /* 6.25s */
+     84.231% { opacity: 1; transform: translateY(0) scale(1); }   /* 6.57s */
+     90.385% { opacity: 1; transform: translateY(0) scale(1); animation-timing-function: ease-in; }   /* 7.05s */
+     93.205% { opacity: 0; transform: translateY(-8px) scale(.9); }   /* 7.27s */
+        100% { opacity: 0; transform: translateY(-8px) scale(.9); }   /* 7.80s */
+}
+
+/* moon glow behind the cat */
+@keyframes moonLife {
+          0% { opacity: 0; }   /* 0.00s */
+      7.692% { opacity: 0; }   /* 0.60s */
+     17.949% { opacity: 1; }   /* 1.40s */
+     82.051% { opacity: 1; }   /* 6.40s */
+     92.308% { opacity: 0; }   /* 7.20s */
+        100% { opacity: 0; }   /* 7.80s */
+}
+
+/* whole page: fade in, fade out just before auto-advance */
+@keyframes pageLife {
+          0% { opacity: 0; }   /* 0.00s */
+      5.769% { opacity: 1; }   /* 0.45s */
+     92.949% { opacity: 1; }   /* 7.25s */
+        100% { opacity: 0; }   /* 7.80s */
+}
+
+/* ---- ambient loops (not on the timeline) ------------------------------ */
+@keyframes pageIn    { from { opacity: 0; } to { opacity: 1; } }
+@keyframes catTilt   { from { transform: rotate(-1.6deg); } to { transform: rotate(1.6deg); } }
+@keyframes tailSwish { from { transform: rotate(-7deg); }   to { transform: rotate(9deg); } }
+@keyframes whiskL    { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-4deg); } }
+@keyframes whiskR    { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(4deg); } }
+@keyframes enterPulse {
+    0%   { box-shadow: 0 0 0 0    rgba(34, 197, 94, 0.45); }
+    70%  { box-shadow: 0 0 0 14px rgba(34, 197, 94, 0); }
+    100% { box-shadow: 0 0 0 0    rgba(34, 197, 94, 0); }
+}
+
+/* ---- wiring: which animation drives which part ---------------------------- */
+.cat-svg .cat-pop  { animation: catRise    var(--welcome-total) linear      both; }
+.cat-svg .pupil    { animation: pupilLife  var(--welcome-total) ease-in-out both; }
+.cat-svg .lid      { animation: lidLife    var(--welcome-total) ease-in-out both; }
+.cat-svg .halos    { animation: haloLife   var(--welcome-total) ease-in-out both; }
+.cat-svg .arm      { animation: pawWave    var(--welcome-total) ease-in-out both; }
+.cat-svg .tongue   { animation: tongueLife var(--welcome-total) ease-in-out both; }
+.cat-svg .cat-tilt { animation: catTilt   4.2s ease-in-out infinite alternate; }
+.cat-svg .tail     { animation: tailSwish 2.8s ease-in-out infinite alternate; }
+.cat-svg .whisk-l  { animation: whiskL    3.1s ease-in-out infinite; }
+.cat-svg .whisk-r  { animation: whiskR    3.1s ease-in-out infinite; }
+
+.bubble.b1 { animation: bubble1 var(--welcome-total) linear both; }
+.bubble.b2 { animation: bubble2 var(--welcome-total) linear both; }
+.bubble.b3 { animation: bubble3 var(--welcome-total) linear both; }
+
+.cat-moon  { animation: moonLife var(--welcome-total) ease-in-out both; }
+
+/* the whole page fades in; when the page will auto-advance it also fades out */
+[data-testid="stMainBlockContainer"]:has(.welcome-stage[data-auto="1"]) {
+    animation: pageLife var(--welcome-total) linear both;
+}
+
+[data-testid="stMainBlockContainer"]:has(.welcome-stage[data-auto="0"]) {
+    animation: pageIn 0.45s ease-out both;
+}
+
+/* ---- OS "reduce motion": show the friendly greeting pose, no animation ---- */
+@media (prefers-reduced-motion: reduce) {
+    .welcome-stage,
+    .welcome-stage *,
+    .st-key-welcome_enter button,
+    [data-testid="stMainBlockContainer"] {
+        animation: none !important;
+    }
+}

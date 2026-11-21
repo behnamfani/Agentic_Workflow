@@ -3,7 +3,7 @@ import os
 
 from fastmcp import FastMCP
 from tavily import TavilyClient
-from typing import Literal, Optional, Union
+from typing import Any, Literal, Optional, Union, Dict
 
 web_mcp = FastMCP("Tavily Web MCP")
 TAVILY_API_KEY = os.getenv('TAVILY_API_KEY')
@@ -17,7 +17,7 @@ def search(
     topic: Literal["general", "news", "finance"] = "general",
     time_range: Optional[Literal["day", "week", "month", "year"]] = None,
     include_domains: Optional[list[str]] = None,
-    **kwargs,
+    kwargs: Optional[Dict[str, Any]] = None,
 ) -> str:
     """
     Search the internet with Tavily.
@@ -94,7 +94,7 @@ def extract(
     urls: Optional[Union[str, list]] = None,
     extract_depth: Literal["basic", "advanced"] = "basic",
     format: Literal["markdown", "text"] = "markdown",
-    **kwargs,
+    kwargs: Optional[Dict[str, Any]] = None,
 ) -> str:
     """
     Extract the given URL with Tavily.

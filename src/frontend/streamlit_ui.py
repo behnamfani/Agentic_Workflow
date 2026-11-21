@@ -47,14 +47,14 @@ def _apply_bot_theme(selected_bot: str) -> None:
         "General": "style.css",
     }
     css_name = theme_files.get(selected_bot, "style.css")
-    _load_css_file(current_directory_path + f"/static/{css_name}")
+    _load_css_file(current_directory_path + f"/UI/static/{css_name}")
 
 
 def _get_bot_avatar(selected_bot: str) -> Any | None:
     local_avatars = {
-        "BoardGenie": current_directory_path + r"/static/BoardGenie.png",
-        "ProfileExplainer": current_directory_path + r"/static/ProfileExplainer.png",
-        "General": current_directory_path + r"/static/Cat.png",
+        "BoardGenie": current_directory_path + r"/UI/static/BoardGenie.png",
+        "ProfileExplainer": current_directory_path + r"/UI/static/ProfileExplainer.png",
+        "General": current_directory_path + r"/UI/static/Cat.png",
     }
 
     local_path = local_avatars.get(selected_bot) or local_avatars["General"]
@@ -109,7 +109,7 @@ def main() -> None:
     if st.session_state.bot_started:
         _apply_bot_theme(st.session_state.selected_bot)
     else:
-        _load_css_file(current_directory_path + "/static/style_selection.css")
+        _load_css_file(current_directory_path + "/UI/static/style_selection.css")
 
     # ============ BOT SELECTION PAGE =============
     if not st.session_state.bot_started:
