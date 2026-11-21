@@ -21,11 +21,10 @@ sys.path.insert(0, root_directory_path)
 from src.backend.utils.logging_config import get_logger
 from src.backend.app import App
 from src.backend.utils.validate_instructions import optional_instructions
-from src.backend.agents.ProfileExplainer import profile_tools
 from src.backend.agents.ProfileExplainer import profile_explainer
-from src.backend.agents.General import general, general_bot_tools
-from src.backend.agents.BoardGenie import game_tools
+from src.backend.agents.General import general
 from src.frontend.UI.components import selection
+from src.frontend.welcome_page import welcome_pending, render_welcome
 
 SPINNER_TEXTS = {
     "General":          "Purring... 🐾",
@@ -106,6 +105,11 @@ def main() -> None:
     )
 
     init_session()
+
+    if welcome_pending():
+        render_welcome()
+        return
+
     if st.session_state.bot_started:
         _apply_bot_theme(st.session_state.selected_bot)
     else:
@@ -153,14 +157,20 @@ def main() -> None:
             if st.button("🚀  Start Session", key="start_bot",
                          type="primary", use_container_width=True):
 
+                # Lazy imports
+                from src.backend.app import App
+
                 # Build opt_instruction per bot
                 if selected_bot == "General":
+                    from src.backend.agents.General import general_bot_tools
                     opt_instruction = f"Name: {name}\nDetails:\n{details}"
                     tools = general_bot_tools.tools
                 elif selected_bot == "ProfileExplainer":
+                    from src.backend.agents.ProfileExplainer import profile_tools
                     opt_instruction = f"Language: {language}"
                     tools = profile_tools.tools
                 elif selected_bot == "BoardGenie":
+                    from src.backend.agents.BoardGenie import game_tools
                     opt_instruction = (f"Taste of the game: {taste_of_game}\n"
                                        f"Favourite game: {favourite_game}"
                                        f"Memory: {long_term_memory}")
@@ -204,8 +214,12 @@ def main() -> None:
             
             # Back to Selection
             if st.button("Back to Bot Selection", key="back"):
-                # Clear everything and go back
+                # Clear everything and go back (not welcome flag)
+                keep = {k: st.session_state[k]
+                        for k in ("welcome_done", "authenticated")
+                        if k in st.session_state}
                 st.session_state.clear()
+                st.session_state.update(keep)
                 st.cache_resource.clear()
                 st.cache_data.clear()
                 st.rerun()
